@@ -1,1 +1,4 @@
-int c = a @ b; /*
+int c = f @ b; /*
+    int e = 7;
+    */
+int d = @ 5;

@@ -13,9 +13,10 @@ class Error {
     ErrorType errorType;
     int line;
     int index;
+    int column;
 
     public:
-    Error(ErrorType error_type, int line_num, int ind);
+    Error(ErrorType error_type, int line_num, int ind, int col_num);
 
     void printErrorMsg(std::string source, std::string sourceContent);
 };

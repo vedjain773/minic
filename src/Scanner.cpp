@@ -21,6 +21,7 @@ void Scanner::scanFile() {
 void Scanner::scanToken() {
     // std::cout << current << "\n";
     char curr = sourceContent[current++];
+    column++;
     switch (curr) {
         case '{': {
             addToken(TokenType::LEFT_CURLY);
@@ -117,7 +118,7 @@ void Scanner::scanToken() {
                 current++;
                 addToken(TokenType::BANG_EQUALS);
             } else {
-                Error error(ErrorType::UNEXPECTED_CHAR, line, current - 1);
+                Error error(ErrorType::UNEXPECTED_CHAR, line, current, column);
                 error.printErrorMsg(source, sourceContent);
             }
         }
@@ -128,7 +129,7 @@ void Scanner::scanToken() {
                 current++;
                 addToken(TokenType::AND);
             } else {
-                Error error(ErrorType::UNEXPECTED_CHAR, line, current - 1);
+                Error error(ErrorType::UNEXPECTED_CHAR, line, current, column);
                 error.printErrorMsg(source, sourceContent);
             }
         }
@@ -139,7 +140,7 @@ void Scanner::scanToken() {
                 current++;
                 addToken(TokenType::OR);
             } else {
-                Error error(ErrorType::UNEXPECTED_CHAR, line, current - 1);
+                Error error(ErrorType::UNEXPECTED_CHAR, line, current, column);
                 error.printErrorMsg(source, sourceContent);
             }
         }
@@ -152,14 +153,14 @@ void Scanner::scanToken() {
                 bool asterisk = lookAhead('*');
 
                 if (!asterisk) {
-                    Error error(ErrorType::NO_TERM_CHAR_MULT, line, current - 1);
+                    Error error(ErrorType::NO_TERM_CHAR_MULT, line, current, column);
                     error.printErrorMsg(source, sourceContent);
                 }
 
                 if (sourceContent[current] == '/') {
                     current++;
                 } else {
-                    Error error(ErrorType::NO_TERM_CHAR_MULT, line, current-1);
+                    Error error(ErrorType::NO_TERM_CHAR_MULT, line, current, column);
                     error.printErrorMsg(source, sourceContent);
                 }
 
@@ -175,7 +176,7 @@ void Scanner::scanToken() {
             if (termInvComma) {
                 addToken(TokenType::STRING);
             } else {
-                Error error(ErrorType::UNEXPECTED_CHAR, line, current-1);
+                Error error(ErrorType::UNEXPECTED_CHAR, line, current, column);
                 error.printErrorMsg(source, sourceContent);
             }
         }
@@ -195,6 +196,7 @@ void Scanner::scanToken() {
 
         case '\n': {
             line++;
+            column = 1;
         }
         break;
 
@@ -204,7 +206,7 @@ void Scanner::scanToken() {
             } else if (isAlpha(curr)) {
                 scanWord();
             } else {
-                Error error(ErrorType::UNEXPECTED_CHAR, line, current - 1);
+                Error error(ErrorType::UNEXPECTED_CHAR, line, current, column);
                 error.printErrorMsg(source, sourceContent);
             }
         }
@@ -235,10 +237,17 @@ bool Scanner::lookAhead(char expEnd) {
     bool isPresent = false;
 
     while (current < sourceContent.size()) {
+
+        if (sourceContent[current] == '\n') {
+            line++;
+            column = 1;
+        }
+
         ++current;
         if (sourceContent[current] == expEnd) {
             isPresent = true;
             current++;
+            column++;
             break;
         }
     }

@@ -16,6 +16,7 @@ class Scanner {
     int start = 0;
     int current = 0;
     int line = 1;
+    int column = 1;
 
     public:
     Scanner (std::string sourceArg);

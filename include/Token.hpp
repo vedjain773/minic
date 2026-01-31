@@ -30,12 +30,11 @@ enum class TokenType {
 extern std::unordered_map<std::string, TokenType> keywords;
 
 class Token {
-    private:
+    public:
     TokenType tokentype;
     std::string lexeme;
     int line;
 
-    public:
     Token(TokenType tt, std::string lex, int lineNum);
     void printToken();
 };

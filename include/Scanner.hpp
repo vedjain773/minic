@@ -24,6 +24,7 @@ class Scanner {
     void scanProg();
     void scanToken();
     void printTokens();
+    std::vector<Token> getTokenList();
 
     void addToken(TokenType tokenType);
     bool lookAhead(char expEnd);

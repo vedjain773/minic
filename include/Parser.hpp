@@ -1,0 +1,22 @@
+#ifndef PARSER_H
+#define PARSER_H
+
+#include <vector>
+#include "Token.hpp"
+#include "Expression.hpp"
+
+class Parser {
+    public:
+    std::vector<Token> TokenList;
+    int current;
+
+    Parser(std::vector<Token> tokenlist);
+    Token getNextToken();
+
+    std::unique_ptr<Expression> ParsePrimaryExpr();
+    std::unique_ptr<Expression> ParseIntExpr();
+    std::unique_ptr<Expression> ParseVarExpr();
+    std::unique_ptr<Expression> ParseParenExpr();
+};
+
+#endif

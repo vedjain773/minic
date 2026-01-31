@@ -289,9 +289,13 @@ void Scanner::scanWord() {
     auto it = keywords.find(sub);
 
     if (it != keywords.end()) {
-        addToken(TokenType::IDENTIFIER);
-    } else {
         addToken(keywords[sub]);
+    } else {
+        addToken(TokenType::IDENTIFIER);
     }
 
+}
+
+std::vector<Token> Scanner::getTokenList() {
+    return tokenList;
 }

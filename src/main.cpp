@@ -10,10 +10,7 @@ int main() {
     std::vector <Token> tokenlist = scanner.getTokenList();
     Parser parser(tokenlist);
 
-    std::unique_ptr<Expression> root = parser.ParseProgram();
-
-    PrintVisitor printvisitor;
-    root->accept(printvisitor);
+    parser.ParseProgram();
 
     return 0;
 }

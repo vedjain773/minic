@@ -22,7 +22,9 @@ class Parser {
 
     std::unique_ptr<Expression> ParseUnaryExpr();
 
-    std::unique_ptr<Expression> ParseProgram();
+    std::unique_ptr<Expression> ParseExpr();
+
+    void ParseProgram();
 };
 
 #endif

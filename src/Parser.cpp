@@ -1,4 +1,5 @@
 #include "Parser.hpp"
+#include "Visitor.hpp"
 #include <iostream>
 
 Parser::Parser(std::vector<Token> tokenlist) {
@@ -99,22 +100,27 @@ std::unique_ptr<Expression> Parser::ParseUnaryExpr() {
     }
 }
 
-std::unique_ptr<Expression> Parser::ParseProgram() {
+std::unique_ptr<Expression> Parser::ParseExpr() {
+    return ParseUnaryExpr();
+}
+
+void Parser::ParseProgram() {
+    PrintVisitor printvisitor;
     while (true) {
         switch(peekCurr().tokentype) {
             case TokenType::SEMICOLON: {
                 getNextToken();
-                return ParseProgram();
             }
             break;
 
             case TokenType::END_OF_FILE: {
-                return nullptr;
+                return;
             }
             break;
 
             default: {
-                return ParseUnaryExpr();
+                std::unique_ptr<Expression> exp = std::move(ParseExpr());
+                exp->accept(printvisitor);
             }
         }
     }

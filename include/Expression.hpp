@@ -3,10 +3,12 @@
 
 #include <string>
 #include <memory>
+#include "Visitor.hpp"
 
 class Expression {
     public:
     virtual ~Expression() = default;
+    virtual void accept(Visitor& visitor) = 0;
 };
 
 class IntExpr: public Expression {
@@ -14,6 +16,7 @@ class IntExpr: public Expression {
     int Val;
 
     IntExpr(int value);
+    void accept(Visitor& visitor);
 };
 
 class VarExpr: public Expression {
@@ -21,6 +24,16 @@ class VarExpr: public Expression {
     std::string Name;
 
     VarExpr(std::string name);
+    void accept(Visitor& visitor);
+};
+
+class UnaryExpr: public Expression {
+    public:
+    char Op;
+    std::unique_ptr<Expression> Operand;
+
+    UnaryExpr(char op, std::unique_ptr<Expression> operand);
+    void accept(Visitor& visitor);
 };
 
 class BinaryExpr: public Expression {
@@ -30,6 +43,7 @@ class BinaryExpr: public Expression {
     std::unique_ptr<Expression> RHS;
 
     BinaryExpr(char op, std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs);
+    void accept(Visitor& visitor);
 };
 
 #endif

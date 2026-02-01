@@ -12,11 +12,17 @@ class Parser {
 
     Parser(std::vector<Token> tokenlist);
     Token getNextToken();
+    Token peekCurr();
+    Token peekNext();
 
     std::unique_ptr<Expression> ParsePrimaryExpr();
     std::unique_ptr<Expression> ParseIntExpr();
     std::unique_ptr<Expression> ParseVarExpr();
     std::unique_ptr<Expression> ParseParenExpr();
+
+    std::unique_ptr<Expression> ParseUnaryExpr();
+
+    std::unique_ptr<Expression> ParseProgram();
 };
 
 #endif

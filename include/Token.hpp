@@ -9,6 +9,9 @@ enum class TokenType {
     INT, CHAR, VOID, IF,
     ELSE, WHILE, RETURN, STRUCT,
 
+    //unary
+    BANG, AMPERSAND,
+
     //operators
     PLUS, MINUS, ASTERISK, SLASH,
     MODULUS, EQUALS, LESS_THAN, GREATER_THAN,

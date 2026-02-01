@@ -118,8 +118,7 @@ void Scanner::scanToken() {
                 current++;
                 addToken(TokenType::BANG_EQUALS);
             } else {
-                Error error(ErrorType::UNEXPECTED_CHAR, line, current, column);
-                error.printErrorMsg(source, sourceContent);
+                addToken(TokenType::BANG);
             }
         }
         break;
@@ -129,8 +128,7 @@ void Scanner::scanToken() {
                 current++;
                 addToken(TokenType::AND);
             } else {
-                Error error(ErrorType::UNEXPECTED_CHAR, line, current, column);
-                error.printErrorMsg(source, sourceContent);
+                addToken(TokenType::AMPERSAND);
             }
         }
         break;
@@ -218,6 +216,9 @@ void Scanner::scanProg() {
         start = current;
         scanToken();
     }
+
+    Token token = Token(TokenType::END_OF_FILE, "", line);
+    tokenList.push_back(token);
 }
 
 void Scanner::printTokens() {

@@ -10,6 +10,8 @@ class BinaryExpr;
 
 class Visitor {
     public:
+    int depth = 0;
+
     virtual void visitIntExpr(IntExpr& intexpr) = 0;
     virtual void visitVarExpr(VarExpr& varexpr) = 0;
     virtual void visitUnaryExpr(UnaryExpr& unaryexpr) = 0;
@@ -18,15 +20,12 @@ class Visitor {
 
 class PrintVisitor: public Visitor {
     public:
-    std::string base = "";
-
     void visitIntExpr(IntExpr& intexpr);
     void visitVarExpr(VarExpr& varexpr);
     void visitUnaryExpr(UnaryExpr& unaryexpr);
     void visitBinaryExpr(BinaryExpr& binaryexpr);
 
-    void incIndent();
-    void decIndent();
+    std::string getIndent();
 };
 
 #endif

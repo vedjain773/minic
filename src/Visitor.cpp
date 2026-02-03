@@ -3,26 +3,27 @@
 #include <iostream>
 
 void PrintVisitor::visitIntExpr(IntExpr& intexpr) {
-    std::cout << base << "|-Int(" << intexpr.Val << ")\n";
+    std::cout << getIndent() << "|-Int(" << intexpr.Val << ")\n";
 }
 
 void PrintVisitor::visitVarExpr(VarExpr& varexpr) {
-    std::cout << base << "|-Var(" << varexpr.Name << ")\n";
+    std::cout << getIndent() << "|-Var(" << varexpr.Name << ")\n";
 }
 
 void PrintVisitor::visitUnaryExpr(UnaryExpr& unaryexpr) {
-    std::cout << base << "|-Unary(" << unaryexpr.Op << ")\n";
+    std::cout << getIndent() << "|-Unary(" << unaryexpr.Op << ")\n";
 }
 
 void PrintVisitor::visitBinaryExpr(BinaryExpr& binexpr) {
-    std::cout << base << "|-Oper(" << binexpr.Op << ")\n";
+    std::cout << getIndent() << "|-Oper(" << binexpr.Op << ")\n";
 }
 
-void PrintVisitor::incIndent() {
-    base.append("  ");
-}
+std::string PrintVisitor::getIndent() {
+    std::string indent = "";
 
-void PrintVisitor::decIndent() {
-    base.pop_back();
-    base.pop_back();
+    for (int i = 0; i < depth; i++) {
+        indent.append("  ");
+    }
+
+    return indent;
 }

@@ -33,7 +33,9 @@ void UnaryExpr::accept(Visitor& visitor) {
 
     std::unique_ptr<Expression> Operand = std::move(this->Operand);
 
+    visitor.depth += 1;
     Operand->accept(visitor);
+    visitor.depth -= 1;
 }
 
 void BinaryExpr::accept(Visitor& visitor) {
@@ -42,6 +44,11 @@ void BinaryExpr::accept(Visitor& visitor) {
     std::unique_ptr<Expression> lExpr = std::move(this->LHS);
     std::unique_ptr<Expression> rExpr = std::move(this->RHS);
 
+    visitor.depth += 1;
     lExpr->accept(visitor);
+    visitor.depth -= 1;
+
+    visitor.depth += 1;
     rExpr->accept(visitor);
+    visitor.depth -= 1;
 }

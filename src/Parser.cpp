@@ -100,8 +100,28 @@ std::unique_ptr<Expression> Parser::ParseUnaryExpr() {
     }
 }
 
+std::unique_ptr<Expression> Parser::ParseFactorExpr() {
+    std::unique_ptr<Expression> lhs = std::move(ParseUnaryExpr());
+    switch(peekCurr().tokentype) {
+        case TokenType::SLASH:
+        case TokenType::ASTERISK: {
+            char oper = peekCurr().lexeme[0];
+            getNextToken();
+
+            std::unique_ptr<Expression> rhs = std::move(ParseUnaryExpr());
+            auto Result = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
+            return Result;
+        }
+        break;
+
+        default: {
+            return lhs;
+        }
+    }
+}
+
 std::unique_ptr<Expression> Parser::ParseExpr() {
-    return ParseUnaryExpr();
+    return ParseFactorExpr();
 }
 
 void Parser::ParseProgram() {

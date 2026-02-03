@@ -24,6 +24,9 @@ class PrintVisitor: public Visitor {
     void visitVarExpr(VarExpr& varexpr);
     void visitUnaryExpr(UnaryExpr& unaryexpr);
     void visitBinaryExpr(BinaryExpr& binaryexpr);
+
+    void incIndent();
+    void decIndent();
 };
 
 #endif

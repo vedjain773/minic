@@ -30,10 +30,18 @@ void VarExpr::accept(Visitor& visitor) {
 
 void UnaryExpr::accept(Visitor& visitor) {
     visitor.visitUnaryExpr(*this);
+
     std::unique_ptr<Expression> Operand = std::move(this->Operand);
+
     Operand->accept(visitor);
 }
 
 void BinaryExpr::accept(Visitor& visitor) {
     visitor.visitBinaryExpr(*this);
+
+    std::unique_ptr<Expression> lExpr = std::move(this->LHS);
+    std::unique_ptr<Expression> rExpr = std::move(this->RHS);
+
+    lExpr->accept(visitor);
+    rExpr->accept(visitor);
 }

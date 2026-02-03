@@ -15,10 +15,11 @@ class Parser {
     Token peekCurr();
     Token peekNext();
 
-    std::unique_ptr<Expression> ParsePrimaryExpr();
     std::unique_ptr<Expression> ParseIntExpr();
     std::unique_ptr<Expression> ParseVarExpr();
     std::unique_ptr<Expression> ParseParenExpr();
+
+    std::unique_ptr<Expression> ParsePrimaryExpr();
 
     std::unique_ptr<Expression> ParseUnaryExpr();
 
@@ -27,6 +28,11 @@ class Parser {
     std::unique_ptr<Expression> ParseTermExpr();
 
     std::unique_ptr<Expression> ParseCompExpr();
+
+    std::unique_ptr<Expression> ParseEqualityExpr();
+
+    std::unique_ptr<Expression> ParseLAndExpr();
+    std::unique_ptr<Expression> ParseLOrExpr();
 
     std::unique_ptr<Expression> ParseExpr();
 

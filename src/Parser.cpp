@@ -143,8 +143,51 @@ std::unique_ptr<Expression> Parser::ParseCompExpr() {
     return lhs;
 }
 
+std::unique_ptr<Expression> Parser::ParseEqualityExpr() {
+    auto lhs = std::move(ParseCompExpr());
+
+    while (peekCurr().tokentype == TokenType::BANG_EQUALS || peekCurr().tokentype == TokenType::EQUALS_EQUALS) {
+
+        char oper = peekCurr().lexeme[0];
+        getNextToken();
+        auto rhs = std::move(ParseCompExpr());
+        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
+    }
+
+    return lhs;
+}
+
+std::unique_ptr<Expression> Parser::ParseLAndExpr() {
+    auto lhs = std::move(ParseEqualityExpr());
+
+    while (peekCurr().tokentype == TokenType::AND) {
+
+        char oper = peekCurr().lexeme[0];
+        getNextToken();
+        auto rhs = std::move(ParseEqualityExpr());
+        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
+    }
+
+    return lhs;
+}
+
+std::unique_ptr<Expression> Parser::ParseLOrExpr() {
+    auto lhs = std::move(ParseLAndExpr());
+
+    while (peekCurr().tokentype == TokenType::OR) {
+
+        char oper = peekCurr().lexeme[0];
+        getNextToken();
+        auto rhs = std::move(ParseLAndExpr());
+        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
+    }
+
+    return lhs;
+}
+
+
 std::unique_ptr<Expression> Parser::ParseExpr() {
-    return ParseCompExpr();
+    return ParseLOrExpr();
 }
 
 void Parser::ParseProgram() {

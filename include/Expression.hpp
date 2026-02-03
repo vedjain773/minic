@@ -5,6 +5,23 @@
 #include <memory>
 #include "Visitor.hpp"
 
+enum class Operators {
+    //Unary
+    BANG, MINUS,
+
+    //Binary
+    DIVIDE, MULT, PLUS,
+
+    //Comparison
+    GREATER, GREATER_EQUALS, LESS, LESS_EQUALS,
+
+    //Equality
+    EQUALS, NOT_EQUALS,
+
+    //Logical
+    AND, OR,
+};
+
 class Expression {
     public:
     virtual ~Expression() = default;

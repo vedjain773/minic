@@ -24,6 +24,8 @@ class Parser {
 
     std::unique_ptr<Expression> ParseFactorExpr();
 
+    std::unique_ptr<Expression> ParseTermExpr();
+
     std::unique_ptr<Expression> ParseExpr();
 
     void ParseProgram();

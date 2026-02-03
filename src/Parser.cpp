@@ -113,21 +113,38 @@ std::unique_ptr<Expression> Parser::ParseFactorExpr() {
     return lhs;
 }
 
- std::unique_ptr<Expression> Parser::ParseTermExpr() {
-     auto lhs = std::move(ParseFactorExpr());
+std::unique_ptr<Expression> Parser::ParseTermExpr() {
+    auto lhs = std::move(ParseFactorExpr());
 
-     while (peekCurr().tokentype == TokenType::MINUS || peekCurr().tokentype == TokenType::PLUS) {
-         char oper = peekCurr().lexeme[0];
-         getNextToken();
-         auto rhs = std::move(ParseFactorExpr());
-         lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
-     }
+    while (peekCurr().tokentype == TokenType::MINUS || peekCurr().tokentype == TokenType::PLUS) {
+        char oper = peekCurr().lexeme[0];
+        getNextToken();
+        auto rhs = std::move(ParseFactorExpr());
+        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
+    }
 
-     return lhs;
- }
+    return lhs;
+}
+
+std::unique_ptr<Expression> Parser::ParseCompExpr() {
+    auto lhs = std::move(ParseTermExpr());
+
+    while (peekCurr().tokentype == TokenType::GREATER_THAN ||
+            peekCurr().tokentype == TokenType::GREATER_EQUALS ||
+            peekCurr().tokentype == TokenType::LESS_EQUALS ||
+            peekCurr().tokentype == TokenType::LESS_THAN) {
+
+        char oper = peekCurr().lexeme[0];
+        getNextToken();
+        auto rhs = std::move(ParseTermExpr());
+        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
+    }
+
+    return lhs;
+}
 
 std::unique_ptr<Expression> Parser::ParseExpr() {
-    return ParseTermExpr();
+    return ParseCompExpr();
 }
 
 void Parser::ParseProgram() {

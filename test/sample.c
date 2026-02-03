@@ -1,2 +1,4 @@
-!!a;
---1;
+int main() {
+    int a = 5 + 6;
+    return 0;
+}

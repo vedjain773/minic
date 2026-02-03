@@ -19,7 +19,6 @@ void Scanner::scanFile() {
 }
 
 void Scanner::scanToken() {
-    // std::cout << current << "\n";
     char curr = sourceContent[current++];
     column++;
     switch (curr) {
@@ -285,8 +284,7 @@ void Scanner::scanWord() {
         current++;
     }
 
-    std::string sub = sourceContent.substr(start, current);
-
+    std::string sub = sourceContent.substr(start, current - start);
     auto it = keywords.find(sub);
 
     if (it != keywords.end()) {

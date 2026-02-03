@@ -6,11 +6,12 @@ int main() {
     Scanner scanner("test/sample.c");
     scanner.scanFile();
     scanner.scanProg();
+    // scanner.printTokens();
 
     std::vector <Token> tokenlist = scanner.getTokenList();
     Parser parser(tokenlist);
 
-    parser.ParseProgram();
+    // parser.ParseProgram();
 
     return 0;
 }

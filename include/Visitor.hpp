@@ -7,6 +7,7 @@ class IntExpr;
 class VarExpr;
 class UnaryExpr;
 class BinaryExpr;
+class AssignExpr;
 
 class Visitor {
     public:
@@ -16,6 +17,7 @@ class Visitor {
     virtual void visitVarExpr(VarExpr& varexpr) = 0;
     virtual void visitUnaryExpr(UnaryExpr& unaryexpr) = 0;
     virtual void visitBinaryExpr(BinaryExpr& binaryexpr) = 0;
+    virtual void visitAssignExpr(AssignExpr& assignexpr) = 0;
 };
 
 class PrintVisitor: public Visitor {
@@ -24,6 +26,7 @@ class PrintVisitor: public Visitor {
     void visitVarExpr(VarExpr& varexpr);
     void visitUnaryExpr(UnaryExpr& unaryexpr);
     void visitBinaryExpr(BinaryExpr& binaryexpr);
+    void visitAssignExpr(AssignExpr& assignexpr);
 
     std::string getIndent();
 };

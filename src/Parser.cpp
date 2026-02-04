@@ -175,7 +175,6 @@ std::unique_ptr<Expression> Parser::ParseLOrExpr() {
     auto lhs = std::move(ParseLAndExpr());
 
     while (peekCurr().tokentype == TokenType::OR) {
-
         Operators oper = getOp(peekCurr().lexeme);
         getNextToken();
         auto rhs = std::move(ParseLAndExpr());
@@ -185,9 +184,24 @@ std::unique_ptr<Expression> Parser::ParseLOrExpr() {
     return lhs;
 }
 
+std::unique_ptr<Expression> Parser::ParseAssignExpr() {
+    auto lhs = std::move(ParseLOrExpr());
+
+
+    if (peekCurr().tokentype == TokenType::EQUALS) {
+        getNextToken();
+        auto rhs = std::move(ParseAssignExpr());
+
+        auto Result = std::make_unique<AssignExpr>(std::move(lhs), std::move(rhs));
+        return Result;
+    } else {
+        return lhs;
+    }
+}
+
 
 std::unique_ptr<Expression> Parser::ParseExpr() {
-    return ParseLOrExpr();
+    return ParseAssignExpr();
 }
 
 void Parser::ParseProgram() {

@@ -34,6 +34,8 @@ class Parser {
     std::unique_ptr<Expression> ParseLAndExpr();
     std::unique_ptr<Expression> ParseLOrExpr();
 
+    std::unique_ptr<Expression> ParseAssignExpr();
+
     std::unique_ptr<Expression> ParseExpr();
 
     void ParseProgram();

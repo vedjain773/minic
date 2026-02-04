@@ -61,6 +61,11 @@ BinaryExpr::BinaryExpr(Operators op, std::unique_ptr<Expression> lhs, std::uniqu
     Op = op;
 }
 
+AssignExpr::AssignExpr(std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs) {
+    LHS = std::move(lhs);
+    RHS = std::move(rhs);
+}
+
 void IntExpr::accept(Visitor& visitor) {
     visitor.visitIntExpr(*this);
 }
@@ -81,6 +86,21 @@ void UnaryExpr::accept(Visitor& visitor) {
 
 void BinaryExpr::accept(Visitor& visitor) {
     visitor.visitBinaryExpr(*this);
+
+    std::unique_ptr<Expression> lExpr = std::move(this->LHS);
+    std::unique_ptr<Expression> rExpr = std::move(this->RHS);
+
+    visitor.depth += 1;
+    lExpr->accept(visitor);
+    visitor.depth -= 1;
+
+    visitor.depth += 1;
+    rExpr->accept(visitor);
+    visitor.depth -= 1;
+}
+
+void AssignExpr::accept(Visitor& visitor) {
+    visitor.visitAssignExpr(*this);
 
     std::unique_ptr<Expression> lExpr = std::move(this->LHS);
     std::unique_ptr<Expression> rExpr = std::move(this->RHS);

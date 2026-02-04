@@ -66,4 +66,13 @@ class BinaryExpr: public Expression {
     void accept(Visitor& visitor);
 };
 
+class AssignExpr: public Expression {
+    public:
+    std::unique_ptr<Expression> LHS;
+    std::unique_ptr<Expression> RHS;
+
+    AssignExpr(std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs);
+    void accept(Visitor& visitor);
+};
+
 #endif

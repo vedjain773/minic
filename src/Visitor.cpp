@@ -18,6 +18,10 @@ void PrintVisitor::visitBinaryExpr(BinaryExpr& binexpr) {
     std::cout << getIndent() << "|-Oper(" << getOpStr(binexpr.Op) << ")\n";
 }
 
+void PrintVisitor::visitAssignExpr(AssignExpr& assignexpr) {
+    std::cout << getIndent() << "|-Assign(=)\n";
+}
+
 std::string PrintVisitor::getIndent() {
     std::string indent = "";
 

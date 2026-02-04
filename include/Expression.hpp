@@ -22,6 +22,9 @@ enum class Operators {
     AND, OR,
 };
 
+std::string getOpStr(Operators op);
+Operators getOp(std::string op_str);
+
 class Expression {
     public:
     virtual ~Expression() = default;
@@ -46,20 +49,20 @@ class VarExpr: public Expression {
 
 class UnaryExpr: public Expression {
     public:
-    char Op;
+    Operators Op;
     std::unique_ptr<Expression> Operand;
 
-    UnaryExpr(char op, std::unique_ptr<Expression> operand);
+    UnaryExpr(Operators op, std::unique_ptr<Expression> operand);
     void accept(Visitor& visitor);
 };
 
 class BinaryExpr: public Expression {
     public:
-    char Op;
+    Operators Op;
     std::unique_ptr<Expression> LHS;
     std::unique_ptr<Expression> RHS;
 
-    BinaryExpr(char op, std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs);
+    BinaryExpr(Operators op, std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs);
     void accept(Visitor& visitor);
 };
 

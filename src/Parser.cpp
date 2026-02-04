@@ -81,7 +81,7 @@ std::unique_ptr<Expression> Parser::ParseUnaryExpr() {
     switch(peekCurr().tokentype) {
         case TokenType::BANG:
         case TokenType::MINUS: {
-            char oper = peekCurr().lexeme[0];
+            Operators oper = getOp(peekCurr().lexeme);
             getNextToken();
 
             if (peekCurr().tokentype == TokenType::BANG || peekCurr().tokentype == TokenType::MINUS) {
@@ -104,7 +104,7 @@ std::unique_ptr<Expression> Parser::ParseFactorExpr() {
     auto lhs = std::move(ParseUnaryExpr());
 
     while (peekCurr().tokentype == TokenType::SLASH || peekCurr().tokentype == TokenType::ASTERISK) {
-        char oper = peekCurr().lexeme[0];
+        Operators oper = getOp(peekCurr().lexeme);
         getNextToken();
         auto rhs = std::move(ParseUnaryExpr());
         lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
@@ -117,7 +117,7 @@ std::unique_ptr<Expression> Parser::ParseTermExpr() {
     auto lhs = std::move(ParseFactorExpr());
 
     while (peekCurr().tokentype == TokenType::MINUS || peekCurr().tokentype == TokenType::PLUS) {
-        char oper = peekCurr().lexeme[0];
+        Operators oper = getOp(peekCurr().lexeme);
         getNextToken();
         auto rhs = std::move(ParseFactorExpr());
         lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
@@ -134,7 +134,7 @@ std::unique_ptr<Expression> Parser::ParseCompExpr() {
             peekCurr().tokentype == TokenType::LESS_EQUALS ||
             peekCurr().tokentype == TokenType::LESS_THAN) {
 
-        char oper = peekCurr().lexeme[0];
+        Operators oper = getOp(peekCurr().lexeme);
         getNextToken();
         auto rhs = std::move(ParseTermExpr());
         lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
@@ -148,7 +148,7 @@ std::unique_ptr<Expression> Parser::ParseEqualityExpr() {
 
     while (peekCurr().tokentype == TokenType::BANG_EQUALS || peekCurr().tokentype == TokenType::EQUALS_EQUALS) {
 
-        char oper = peekCurr().lexeme[0];
+        Operators oper = getOp(peekCurr().lexeme);
         getNextToken();
         auto rhs = std::move(ParseCompExpr());
         lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
@@ -162,7 +162,7 @@ std::unique_ptr<Expression> Parser::ParseLAndExpr() {
 
     while (peekCurr().tokentype == TokenType::AND) {
 
-        char oper = peekCurr().lexeme[0];
+        Operators oper = getOp(peekCurr().lexeme);
         getNextToken();
         auto rhs = std::move(ParseEqualityExpr());
         lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
@@ -176,7 +176,7 @@ std::unique_ptr<Expression> Parser::ParseLOrExpr() {
 
     while (peekCurr().tokentype == TokenType::OR) {
 
-        char oper = peekCurr().lexeme[0];
+        Operators oper = getOp(peekCurr().lexeme);
         getNextToken();
         auto rhs = std::move(ParseLAndExpr());
         lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));

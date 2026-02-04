@@ -84,8 +84,8 @@ void Scanner::scanToken() {
 
         case '=': {
             if (sourceContent[current] == '=') {
-                addToken(TokenType::EQUALS_EQUALS);
                 current++;
+                addToken(TokenType::EQUALS_EQUALS);
             } else {
                 addToken(TokenType::EQUALS);
             }

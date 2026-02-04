@@ -11,11 +11,11 @@ void PrintVisitor::visitVarExpr(VarExpr& varexpr) {
 }
 
 void PrintVisitor::visitUnaryExpr(UnaryExpr& unaryexpr) {
-    std::cout << getIndent() << "|-Unary(" << unaryexpr.Op << ")\n";
+    std::cout << getIndent() << "|-Unary(" << getOpStr(unaryexpr.Op) << ")\n";
 }
 
 void PrintVisitor::visitBinaryExpr(BinaryExpr& binexpr) {
-    std::cout << getIndent() << "|-Oper(" << binexpr.Op << ")\n";
+    std::cout << getIndent() << "|-Oper(" << getOpStr(binexpr.Op) << ")\n";
 }
 
 std::string PrintVisitor::getIndent() {

@@ -1,5 +1,46 @@
 #include "Expression.hpp"
+#include <map>
 #include <iostream>
+
+std::map<Operators, std::string> enumToStr = {
+    {Operators::BANG, "!"},
+    {Operators::MINUS, "-"},
+    {Operators::DIVIDE, "/"},
+    {Operators::MULT, "*"},
+    {Operators::PLUS, "+"},
+    {Operators::GREATER, ">"},
+    {Operators::GREATER_EQUALS, ">="},
+    {Operators::LESS, "<"},
+    {Operators::LESS_EQUALS, "<="},
+    {Operators::EQUALS, "=="},
+    {Operators::NOT_EQUALS, "!="},
+    {Operators::AND, "&&"},
+    {Operators::OR, "||"},
+};
+
+std::map<std::string, Operators> strToEnum = {
+    {"!", Operators::BANG},
+    {"-", Operators::MINUS},
+    {"/", Operators::DIVIDE},
+    {"*", Operators::MULT},
+    {"+", Operators::PLUS},
+    {">", Operators::GREATER},
+    {">=", Operators::GREATER_EQUALS},
+    {"<", Operators::LESS,},
+    {"<=", Operators::LESS_EQUALS},
+    {"==", Operators::EQUALS},
+    {"!=", Operators::NOT_EQUALS},
+    {"&&", Operators::AND},
+    {"||", Operators::OR},
+};
+
+std::string getOpStr(Operators op) {
+    return enumToStr[op];
+}
+
+Operators getOp(std::string opStr) {
+    return strToEnum[opStr];
+}
 
 IntExpr::IntExpr(int value) {
     Val = value;
@@ -9,12 +50,12 @@ VarExpr::VarExpr(std::string name) {
     Name = name;
 }
 
-UnaryExpr::UnaryExpr(char op, std::unique_ptr<Expression> operand) {
+UnaryExpr::UnaryExpr(Operators op, std::unique_ptr<Expression> operand) {
     Op = op;
     Operand = std::move(operand);
 }
 
-BinaryExpr::BinaryExpr(char op, std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs) {
+BinaryExpr::BinaryExpr(Operators op, std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs) {
     LHS = std::move(lhs);
     RHS = std::move(rhs);
     Op = op;

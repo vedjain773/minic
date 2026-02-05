@@ -84,13 +84,8 @@ std::unique_ptr<Expression> Parser::ParseUnaryExpr() {
             Operators oper = getOp(peekCurr().lexeme);
             getNextToken();
 
-            if (peekCurr().tokentype == TokenType::BANG || peekCurr().tokentype == TokenType::MINUS) {
-                auto Result = std::make_unique<UnaryExpr>(oper, ParseUnaryExpr());
-                return Result;
-            } else {
-                auto Result = std::make_unique<UnaryExpr>(oper, ParsePrimaryExpr());
-                return Result;
-            }
+            auto Result = std::make_unique<UnaryExpr>(oper, ParseUnaryExpr());
+            return Result;
         }
         break;
 

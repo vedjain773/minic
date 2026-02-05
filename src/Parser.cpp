@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include "Visitor.hpp"
+#include "Error.hpp"
 #include <iostream>
 
 Parser::Parser(std::vector<Token> tokenlist) {
@@ -43,7 +44,7 @@ std::unique_ptr<Expression> Parser::ParseVarExpr() {
 std::unique_ptr<Expression> Parser::ParseParenExpr() {
     getNextToken();
 
-    auto Result = ParsePrimaryExpr();
+    auto Result = ParseLOrExpr();
 
     if (!Result) {
         return nullptr;

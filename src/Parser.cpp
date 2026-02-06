@@ -25,7 +25,7 @@ Token Parser::peekNext() {
 }
 
 std::unique_ptr<Expression> Parser::ParseIntExpr() {
-    if (peekCurr().tokentype == TokenType::INTEGER) {
+    if (peekCurr().tokentype != TokenType::INTEGER) {
         Error error(peekCurr().line, peekCurr().column);
         error.printErrorMsg("Expected INTEGER, got " + peekCurr().getTokenStr());
         return nullptr;
@@ -200,11 +200,11 @@ std::unique_ptr<Expression> Parser::ParseLOrExpr() {
 }
 
 std::unique_ptr<Expression> Parser::ParseAssignExpr() {
-    auto lhs = std::move(ParseVarExpr());
+    auto lhs = std::move(ParseLOrExpr());
 
     if (peekCurr().tokentype == TokenType::EQUALS) {
         getNextToken();
-        auto rhs = std::move(ParseLOrExpr());
+        auto rhs = std::move(ParseAssignExpr());
 
         auto Result = std::make_unique<AssignExpr>(std::move(lhs), std::move(rhs));
         return Result;

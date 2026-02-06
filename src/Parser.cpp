@@ -12,7 +12,7 @@ Token Parser::getNextToken() {
     if (current < TokenList.size()) {
         return TokenList[current++];
     } else {
-        return Token(TokenType::END_OF_FILE, "", 1);
+        return Token(TokenType::END_OF_FILE, "", 0, 0);
     }
 }
 
@@ -25,6 +25,12 @@ Token Parser::peekNext() {
 }
 
 std::unique_ptr<Expression> Parser::ParseIntExpr() {
+    if (peekCurr().tokentype == TokenType::INTEGER) {
+        Error error(peekCurr().line, peekCurr().column);
+        error.printErrorMsg("Expected INTEGER, got " + peekCurr().getTokenStr());
+        return nullptr;
+    }
+
     std::string NumStr = peekCurr().lexeme;
     int NumVal = std::stoi(NumStr);
 
@@ -34,6 +40,12 @@ std::unique_ptr<Expression> Parser::ParseIntExpr() {
 }
 
 std::unique_ptr<Expression> Parser::ParseVarExpr() {
+    if (peekCurr().tokentype != TokenType::IDENTIFIER) {
+        Error error(peekCurr().line, peekCurr().column);
+        error.printErrorMsg("Expected IDENTIFER, got " + peekCurr().getTokenStr());
+        return nullptr;
+    }
+
     std::string Var = peekCurr().lexeme;
 
     auto Result = std::make_unique<VarExpr>(Var);
@@ -50,7 +62,12 @@ std::unique_ptr<Expression> Parser::ParseParenExpr() {
         return nullptr;
     }
 
-    getNextToken();
+    if (peekCurr().tokentype != TokenType::RIGHT_ROUND) {
+        Error error(peekCurr().line, peekCurr().column);
+        error.printErrorMsg("Missing )");
+    } else {
+        getNextToken();
+    }
 
     return Result;
 }
@@ -73,6 +90,8 @@ std::unique_ptr<Expression> Parser::ParsePrimaryExpr() {
         break;
 
         default: {
+            Error error(peekCurr().line, peekCurr().column);
+            error.printErrorMsg("Invalid token: " + peekCurr().lexeme + ":");
             return nullptr;
         }
     }
@@ -181,12 +200,11 @@ std::unique_ptr<Expression> Parser::ParseLOrExpr() {
 }
 
 std::unique_ptr<Expression> Parser::ParseAssignExpr() {
-    auto lhs = std::move(ParseLOrExpr());
-
+    auto lhs = std::move(ParseVarExpr());
 
     if (peekCurr().tokentype == TokenType::EQUALS) {
         getNextToken();
-        auto rhs = std::move(ParseAssignExpr());
+        auto rhs = std::move(ParseLOrExpr());
 
         auto Result = std::make_unique<AssignExpr>(std::move(lhs), std::move(rhs));
         return Result;

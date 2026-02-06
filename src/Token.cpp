@@ -38,12 +38,17 @@ std::string TokenTypeNames[] {
     "END_OF_FILE"
 };
 
-Token::Token(TokenType token_type, std::string lex, int line_num) {
+Token::Token(TokenType token_type, std::string lex, int line_num, int col_num) {
     tokentype = token_type;
     lexeme = lex;
     line = line_num;
+    column = col_num;
+}
+
+std::string Token::getTokenStr() {
+    return TokenTypeNames[static_cast<size_t>(tokentype)];
 }
 
 void Token::printToken() {
-    std::cout << "Token: " << lexeme << " Type: " << TokenTypeNames[static_cast<size_t>(tokentype)];
+    std::cout << "Token: " << lexeme << " Type: " << getTokenStr();
 }

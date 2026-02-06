@@ -137,8 +137,8 @@ void Scanner::scanToken() {
                 current++;
                 addToken(TokenType::OR);
             } else {
-                Error error(ErrorType::UNEXPECTED_CHAR, line, current, column);
-                error.printErrorMsg(source, sourceContent);
+                Error error(line, column);
+                error.printErrorMsg("Unexpected character: |");
             }
         }
         break;
@@ -150,15 +150,15 @@ void Scanner::scanToken() {
                 bool asterisk = lookAhead('*');
 
                 if (!asterisk) {
-                    Error error(ErrorType::NO_TERM_CHAR_MULT, line, current, column);
-                    error.printErrorMsg(source, sourceContent);
+                    Error error(line, column);
+                    error.printErrorMsg("No matching * found");
                 }
 
                 if (sourceContent[current] == '/') {
                     current++;
                 } else {
-                    Error error(ErrorType::NO_TERM_CHAR_MULT, line, current, column);
-                    error.printErrorMsg(source, sourceContent);
+                    Error error(line, column);
+                    error.printErrorMsg("No matching / found");
                 }
 
             } else {
@@ -173,8 +173,8 @@ void Scanner::scanToken() {
             if (termInvComma) {
                 addToken(TokenType::STRING);
             } else {
-                Error error(ErrorType::UNEXPECTED_CHAR, line, current, column);
-                error.printErrorMsg(source, sourceContent);
+                Error error(line, column);
+                error.printErrorMsg("No matching \" found");
             }
         }
 
@@ -203,8 +203,8 @@ void Scanner::scanToken() {
             } else if (isAlpha(curr)) {
                 scanWord();
             } else {
-                Error error(ErrorType::UNEXPECTED_CHAR, line, current, column);
-                error.printErrorMsg(source, sourceContent);
+                Error error(line, column);
+                error.printErrorMsg("Unexpected character");
             }
         }
     }
@@ -216,7 +216,7 @@ void Scanner::scanProg() {
         scanToken();
     }
 
-    Token token = Token(TokenType::END_OF_FILE, "", line);
+    Token token = Token(TokenType::END_OF_FILE, "", line, column);
     tokenList.push_back(token);
 }
 
@@ -229,7 +229,7 @@ void Scanner::printTokens() {
 
 void Scanner::addToken(TokenType tokenType) {
     std::string lex = sourceContent.substr(start, current - start);
-    Token token = Token(tokenType, lex, line);
+    Token token = Token(tokenType, lex, line, column);
     tokenList.push_back(token);
 }
 

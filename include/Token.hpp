@@ -37,8 +37,10 @@ class Token {
     TokenType tokentype;
     std::string lexeme;
     int line;
+    int column;
 
-    Token(TokenType tt, std::string lex, int lineNum);
+    Token(TokenType tt, std::string lex, int line_num, int col_num);
+    std::string getTokenStr();
     void printToken();
 };
 

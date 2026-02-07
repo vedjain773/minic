@@ -1,6 +1,5 @@
 #include "Scanner.hpp"
 #include "Parser.hpp"
-#include "Visitor.hpp"
 
 int main() {
     Scanner scanner("test/sample.c");

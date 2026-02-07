@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include "Visitor.hpp"
+#include "StmtVisitor.hpp"
 #include "Error.hpp"
 #include <iostream>
 
@@ -64,7 +65,7 @@ std::unique_ptr<Expression> Parser::ParseParenExpr() {
 
     if (peekCurr().tokentype != TokenType::RIGHT_ROUND) {
         Error error(peekCurr().line, peekCurr().column);
-        error.printErrorMsg("Missing )");
+        error.printErrorMsg("Missing ')'");
     } else {
         getNextToken();
     }
@@ -213,28 +214,40 @@ std::unique_ptr<Expression> Parser::ParseAssignExpr() {
     }
 }
 
-
 std::unique_ptr<Expression> Parser::ParseExpr() {
     return ParseAssignExpr();
 }
 
+std::unique_ptr<Statement> Parser::ParseExprStmt() {
+    std::unique_ptr<Expression> expr = ParseExpr();
+
+    if (peekCurr().tokentype != TokenType::SEMICOLON) {
+        Error error(peekCurr().line, peekCurr().column);
+        error.printErrorMsg("Missing ';'");
+        return nullptr;
+    } else {
+        getNextToken();
+        auto Result = std::make_unique<ExprStmt>(std::move(expr));
+        return Result;
+    }
+}
+
+std::unique_ptr<Statement> Parser::ParseStmt() {
+    return ParseExprStmt();
+}
+
 void Parser::ParseProgram() {
-    PrintVisitor printvisitor;
+    PrintStmtVisitor stmtvisitor;
     while (true) {
         switch(peekCurr().tokentype) {
-            case TokenType::SEMICOLON: {
-                getNextToken();
-            }
-            break;
-
             case TokenType::END_OF_FILE: {
                 return;
             }
             break;
 
             default: {
-                std::unique_ptr<Expression> exp = std::move(ParseExpr());
-                exp->accept(printvisitor);
+                std::unique_ptr<Statement> stmt = std::move(ParseStmt());
+                stmt->accept(stmtvisitor);
             }
         }
     }

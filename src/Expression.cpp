@@ -77,7 +77,7 @@ void VarExpr::accept(Visitor& visitor) {
 void UnaryExpr::accept(Visitor& visitor) {
     visitor.visitUnaryExpr(*this);
 
-    std::unique_ptr<Expression> Operand = std::move(this->Operand);
+    Expression* Operand = (this->Operand).get();
 
     visitor.depth += 1;
     Operand->accept(visitor);
@@ -87,8 +87,8 @@ void UnaryExpr::accept(Visitor& visitor) {
 void BinaryExpr::accept(Visitor& visitor) {
     visitor.visitBinaryExpr(*this);
 
-    std::unique_ptr<Expression> lExpr = std::move(this->LHS);
-    std::unique_ptr<Expression> rExpr = std::move(this->RHS);
+    Expression* lExpr = (this->LHS).get();
+    Expression* rExpr = (this->RHS).get();
 
     visitor.depth += 1;
     lExpr->accept(visitor);
@@ -102,8 +102,8 @@ void BinaryExpr::accept(Visitor& visitor) {
 void AssignExpr::accept(Visitor& visitor) {
     visitor.visitAssignExpr(*this);
 
-    std::unique_ptr<Expression> lExpr = std::move(this->LHS);
-    std::unique_ptr<Expression> rExpr = std::move(this->RHS);
+    Expression* lExpr = (this->LHS).get();
+    Expression* rExpr = (this->RHS).get();
 
     visitor.depth += 1;
     lExpr->accept(visitor);

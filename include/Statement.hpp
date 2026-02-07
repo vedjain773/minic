@@ -1,6 +1,7 @@
 #ifndef STATEMENT_H
 #define STATEMENT_H
 
+#include <vector>
 #include "Expression.hpp"
 #include "StmtVisitor.hpp"
 
@@ -16,6 +17,14 @@ class ExprStmt: public Statement {
 
     ExprStmt(std::unique_ptr<Expression> expr);
     void accept(StmtVisitor& stmtVisitor);
+};
+
+class BlockStmt: public Statement {
+    public:
+    std::unique_ptr<Statement> statement;
+
+    BlockStmt(std::unique_ptr<Statement> stmt);
+    void accept(StmtVisitor& stmtvisistor);
 };
 
 #endif

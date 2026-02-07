@@ -33,6 +33,7 @@ class Parser {
 
     //Parse Statements
     std::unique_ptr<Statement> ParseExprStmt();
+    std::unique_ptr<Statement> ParseBlockStmt();
     std::unique_ptr<Statement> ParseStmt();
 
     void ParseProgram();

@@ -92,7 +92,7 @@ std::unique_ptr<Expression> Parser::ParsePrimaryExpr() {
 
         default: {
             Error error(peekCurr().line, peekCurr().column);
-            error.printErrorMsg("Invalid token: " + peekCurr().lexeme + ":");
+            error.printErrorMsg("Invalid token: '" + peekCurr().lexeme + "'");
             return nullptr;
         }
     }
@@ -232,8 +232,32 @@ std::unique_ptr<Statement> Parser::ParseExprStmt() {
     }
 }
 
+std::unique_ptr<Statement> Parser::ParseBlockStmt() {
+    getNextToken();
+    auto stmt = ParseExprStmt();
+    auto Result = std::make_unique<BlockStmt>(std::move(stmt));
+
+    if (peekCurr().tokentype != TokenType::RIGHT_CURLY) {
+        Error error(peekCurr().line, peekCurr().column);
+        error.printErrorMsg("Expected '}' got " + peekCurr().lexeme);
+        return nullptr;
+    }
+
+    getNextToken();
+    return Result;
+}
+
 std::unique_ptr<Statement> Parser::ParseStmt() {
-    return ParseExprStmt();
+    switch(peekCurr().tokentype) {
+        case TokenType::LEFT_CURLY: {
+            return ParseBlockStmt();
+        }
+        break;
+
+        default: {
+            return ParseExprStmt();
+        }
+    }
 }
 
 void Parser::ParseProgram() {

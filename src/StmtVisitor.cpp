@@ -3,5 +3,9 @@
 #include <iostream>
 
 void PrintStmtVisitor::visitExprStmt(ExprStmt& exprstmt) {
-    std::cout << "|-Expr(Start)\n";
+    std::cout << "|-Stmt(Expr)\n";
+}
+
+void PrintStmtVisitor::visitBlockStmt(BlockStmt& blockstmt) {
+    std::cout << "|-Stmt(Block)\n";
 }

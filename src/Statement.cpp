@@ -11,8 +11,18 @@ void ExprStmt::accept(StmtVisitor& stmtVisitor) {
     PrintVisitor printVis;
 
     printVis.depth += 1;
-    std::unique_ptr<Expression> expr = std::move(this->expression);
+    Expression* expr = (this->expression).get();
     expr->accept(printVis);
     printVis.depth -= 1;
+}
 
+BlockStmt::BlockStmt(std::unique_ptr<Statement> stmt) {
+    statement = std::move(stmt);
+}
+
+void BlockStmt::accept(StmtVisitor& stmtVisitor) {
+    stmtVisitor.visitBlockStmt(*this);
+
+    Statement* stmt = (this->statement).get();
+    stmt->accept(stmtVisitor);
 }

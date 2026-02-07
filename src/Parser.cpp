@@ -234,13 +234,17 @@ std::unique_ptr<Statement> Parser::ParseExprStmt() {
 
 std::unique_ptr<Statement> Parser::ParseBlockStmt() {
     getNextToken();
-    auto stmt = ParseExprStmt();
-    auto Result = std::make_unique<BlockStmt>(std::move(stmt));
+    auto Result = std::make_unique<BlockStmt>();
 
-    if (peekCurr().tokentype != TokenType::RIGHT_CURLY) {
-        Error error(peekCurr().line, peekCurr().column);
-        error.printErrorMsg("Expected '}' got " + peekCurr().lexeme);
-        return nullptr;
+    while (peekCurr().tokentype != TokenType::RIGHT_CURLY) {
+        auto stmt = ParseStmt();
+        Result->addStmt(std::move(stmt));
+
+        if (peekCurr().tokentype == TokenType::END_OF_FILE) {
+            Error error(peekCurr().line, peekCurr().column);
+            error.printErrorMsg("Expected '}'" + peekCurr().lexeme);
+            return nullptr;
+        }
     }
 
     getNextToken();

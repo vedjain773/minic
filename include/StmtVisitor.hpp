@@ -18,6 +18,8 @@ class PrintStmtVisitor: public StmtVisitor {
     public:
     void visitExprStmt(ExprStmt& exprstmt);
     void visitBlockStmt(BlockStmt& blockstmt);
+
+    std::string getIndent();
 };
 
 #endif

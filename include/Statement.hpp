@@ -21,9 +21,10 @@ class ExprStmt: public Statement {
 
 class BlockStmt: public Statement {
     public:
-    std::unique_ptr<Statement> statement;
+    std::vector<std::unique_ptr<Statement>> statements;
 
-    BlockStmt(std::unique_ptr<Statement> stmt);
+    // BlockStmt(std::unique_ptr<Statement> stmt);
+    void addStmt(std::unique_ptr<Statement> stmt);
     void accept(StmtVisitor& stmtvisistor);
 };
 

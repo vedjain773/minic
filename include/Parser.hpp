@@ -36,6 +36,7 @@ class Parser {
     std::unique_ptr<Statement> ParseBlockStmt();
     std::unique_ptr<Statement> ParseIfStmt();
     std::unique_ptr<Statement> ParseElseStmt();
+    std::unique_ptr<Statement> ParseWhileStmt();
     std::unique_ptr<Statement> ParseStmt();
 
     void ParseProgram();

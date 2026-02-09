@@ -46,4 +46,13 @@ class ElseStmt: public Statement {
     void accept(StmtVisitor& stmtVisitor);
 };
 
+class WhileStmt: public Statement {
+    public:
+    std::unique_ptr<Expression> condition;
+    std::unique_ptr<Statement> body;
+
+    WhileStmt(std::unique_ptr<Expression> condn, std::unique_ptr<Statement> whilebody);
+    void accept(StmtVisitor& stmtVisitor);
+};
+
 #endif

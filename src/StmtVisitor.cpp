@@ -18,6 +18,10 @@ void PrintStmtVisitor::visitElseStmt(ElseStmt& elsestmt) {
     std::cout << getIndent() << "|-Stmt(Else)\n";
 }
 
+void PrintStmtVisitor::visitWhileStmt(WhileStmt& whilestmt) {
+    std::cout << getIndent() << "|-Stmt(While)\n";
+}
+
 std::string PrintStmtVisitor::getIndent() {
     std::string indent = "";
 

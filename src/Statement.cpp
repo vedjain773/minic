@@ -80,3 +80,27 @@ void ElseStmt::accept(StmtVisitor& stmtVisitor) {
     elsebody->accept(stmtVisitor);
     stmtVisitor.depth -= 1;
 }
+
+WhileStmt::WhileStmt(std::unique_ptr<Expression> condn, std::unique_ptr<Statement> whilebody) {
+    condition = std::move(condn);
+    body = std::move(whilebody);
+}
+
+void WhileStmt::accept(StmtVisitor& stmtVisitor) {
+    stmtVisitor.visitWhileStmt(*this);
+
+    Expression* condn = (this->condition).get();
+    Statement* elsebody = (this->body).get();
+
+    PrintVisitor printVis;
+    printVis.depth = stmtVisitor.depth;
+
+    stmtVisitor.depth += 1;
+
+    printVis.depth += 1;
+    condn->accept(printVis);
+    printVis.depth -= 1;
+
+    elsebody->accept(stmtVisitor);
+    stmtVisitor.depth -= 1;
+}

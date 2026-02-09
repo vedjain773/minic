@@ -291,6 +291,30 @@ std::unique_ptr<Statement> Parser::ParseElseStmt() {
     return Result;
 }
 
+std::unique_ptr<Statement> Parser::ParseWhileStmt() {
+    getNextToken();
+
+    if (peekCurr().tokentype != TokenType::LEFT_ROUND) {
+        Error error(peekCurr().line, peekCurr().column);
+        error.printErrorMsg("Expected '('");
+        return nullptr;
+    }
+
+    getNextToken();
+    auto condn = ParseLOrExpr();
+
+    if (peekCurr().tokentype != TokenType::RIGHT_ROUND) {
+        Error error(peekCurr().line, peekCurr().column);
+        error.printErrorMsg("Missing ')'");
+        return nullptr;
+    }
+    getNextToken();
+
+    auto whilebody = ParseBlockStmt();
+    auto Result = std::make_unique<WhileStmt>(std::move(condn), std::move(whilebody));
+    return Result;
+}
+
 std::unique_ptr<Statement> Parser::ParseStmt() {
     switch(peekCurr().tokentype) {
         case TokenType::LEFT_CURLY: {
@@ -301,6 +325,12 @@ std::unique_ptr<Statement> Parser::ParseStmt() {
         case TokenType::IF: {
             return ParseIfStmt();
         }
+        break;
+
+        case TokenType::WHILE: {
+            return ParseWhileStmt();
+        }
+        break;
 
         default: {
             return ParseExprStmt();

@@ -14,6 +14,10 @@ void PrintStmtVisitor::visitIfStmt(IfStmt& ifstmt) {
     std::cout << getIndent() << "|-Stmt(If)\n";
 }
 
+void PrintStmtVisitor::visitElseStmt(ElseStmt& elsestmt) {
+    std::cout << getIndent() << "|-Stmt(Else)\n";
+}
+
 std::string PrintStmtVisitor::getIndent() {
     std::string indent = "";
 

@@ -1,3 +1,3 @@
-if (a > b) {
-    a = b;
+else {
+    c = b;
 }

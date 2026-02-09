@@ -272,7 +272,22 @@ std::unique_ptr<Statement> Parser::ParseIfStmt() {
 
     auto ifbody = ParseBlockStmt();
 
-    auto Result = std::make_unique<IfStmt>(std::move(condn), std::move(ifbody));
+    if (peekCurr().tokentype == TokenType::ELSE) {
+        auto elsestmt = ParseElseStmt();
+        auto Result = std::make_unique<IfStmt>(std::move(condn), std::move(ifbody), std::move(elsestmt));
+        return Result;
+    } else {
+        auto elsestmt = nullptr;
+        auto Result = std::make_unique<IfStmt>(std::move(condn), std::move(ifbody), std::move(elsestmt));
+        return Result;
+    }
+}
+
+std::unique_ptr<Statement> Parser::ParseElseStmt() {
+    getNextToken();
+
+    auto elsebody = ParseBlockStmt();
+    auto Result = std::make_unique<ElseStmt>(std::move(elsebody));
     return Result;
 }
 

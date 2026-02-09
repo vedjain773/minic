@@ -32,8 +32,17 @@ class IfStmt: public Statement {
     public:
     std::unique_ptr<Expression> condition;
     std::unique_ptr<Statement> body;
+    std::unique_ptr<Statement> elseStmt;
 
-    IfStmt(std::unique_ptr<Expression> condition, std::unique_ptr<Statement> ifbody);
+    IfStmt(std::unique_ptr<Expression> condition, std::unique_ptr<Statement> ifbody, std::unique_ptr<Statement> elsestmt);
+    void accept(StmtVisitor& stmtVisitor);
+};
+
+class ElseStmt: public Statement {
+    public:
+    std::unique_ptr<Statement> body;
+
+    ElseStmt(std::unique_ptr<Statement> elsebody);
     void accept(StmtVisitor& stmtVisitor);
 };
 

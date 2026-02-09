@@ -36,9 +36,10 @@ void BlockStmt::accept(StmtVisitor& stmtVisitor) {
     stmtVisitor.depth -= 1;
 }
 
-IfStmt::IfStmt(std::unique_ptr<Expression> condn, std::unique_ptr<Statement> ifbody) {
+IfStmt::IfStmt(std::unique_ptr<Expression> condn, std::unique_ptr<Statement> ifbody, std::unique_ptr<Statement> elsestmt) {
     condition = std::move(condn);
     body = std::move(ifbody);
+    elseStmt = std::move(elsestmt);
 }
 
 void IfStmt::accept(StmtVisitor& stmtVisitor) {
@@ -46,6 +47,7 @@ void IfStmt::accept(StmtVisitor& stmtVisitor) {
 
     Expression* condn = (this->condition).get();
     Statement* ifbody = (this->body).get();
+    Statement* elsestmt = (this->elseStmt).get();
 
     PrintVisitor printVis;
     printVis.depth = stmtVisitor.depth;
@@ -57,5 +59,24 @@ void IfStmt::accept(StmtVisitor& stmtVisitor) {
     printVis.depth -= 1;
 
     ifbody->accept(stmtVisitor);
+
+    if (elsestmt != nullptr) {
+        elsestmt->accept(stmtVisitor);
+    }
+
+    stmtVisitor.depth -= 1;
+}
+
+ElseStmt::ElseStmt(std::unique_ptr<Statement> elsebody) {
+    body = std::move(elsebody);
+}
+
+void ElseStmt::accept(StmtVisitor& stmtVisitor) {
+    stmtVisitor.visitElseStmt(*this);
+
+    Statement* elsebody = (this->body).get();
+
+    stmtVisitor.depth += 1;
+    elsebody->accept(stmtVisitor);
     stmtVisitor.depth -= 1;
 }

@@ -10,6 +10,10 @@ void PrintStmtVisitor::visitBlockStmt(BlockStmt& blockstmt) {
     std::cout << getIndent() << "|-Stmt(Block)\n";
 }
 
+void PrintStmtVisitor::visitIfStmt(IfStmt& ifstmt) {
+    std::cout << getIndent() << "|-Stmt(If)\n";
+}
+
 std::string PrintStmtVisitor::getIndent() {
     std::string indent = "";
 

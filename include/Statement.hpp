@@ -28,4 +28,13 @@ class BlockStmt: public Statement {
     void accept(StmtVisitor& stmtvisistor);
 };
 
+class IfStmt: public Statement {
+    public:
+    std::unique_ptr<Expression> condition;
+    std::unique_ptr<Statement> body;
+
+    IfStmt(std::unique_ptr<Expression> condition, std::unique_ptr<Statement> ifbody);
+    void accept(StmtVisitor& stmtVisitor);
+};
+
 #endif

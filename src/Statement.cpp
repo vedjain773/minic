@@ -35,3 +35,27 @@ void BlockStmt::accept(StmtVisitor& stmtVisitor) {
     }
     stmtVisitor.depth -= 1;
 }
+
+IfStmt::IfStmt(std::unique_ptr<Expression> condn, std::unique_ptr<Statement> ifbody) {
+    condition = std::move(condn);
+    body = std::move(ifbody);
+}
+
+void IfStmt::accept(StmtVisitor& stmtVisitor) {
+    stmtVisitor.visitIfStmt(*this);
+
+    Expression* condn = (this->condition).get();
+    Statement* ifbody = (this->body).get();
+
+    PrintVisitor printVis;
+    printVis.depth = stmtVisitor.depth;
+
+    stmtVisitor.depth += 1;
+
+    printVis.depth += 1;
+    condn->accept(printVis);
+    printVis.depth -= 1;
+
+    ifbody->accept(stmtVisitor);
+    stmtVisitor.depth -= 1;
+}

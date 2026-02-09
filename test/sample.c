@@ -1,9 +1,7 @@
 if (a > b) {
-    a = b;
+    if (c > d) {
+        f = g;
+    }
 } else {
-    c = b;
-}
-
-while (1 < 2) {
-    a = a + 1;
+    d = e;
 }

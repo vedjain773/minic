@@ -22,6 +22,10 @@ void PrintStmtVisitor::visitWhileStmt(WhileStmt& whilestmt) {
     std::cout << getIndent() << "|-Stmt(While)\n";
 }
 
+void PrintStmtVisitor::visitReturnStmt(ReturnStmt& returnstmt) {
+    std::cout << getIndent() << "|-Stmt(Return)\n";
+}
+
 std::string PrintStmtVisitor::getIndent() {
     std::string indent = "";
 

@@ -315,6 +315,15 @@ std::unique_ptr<Statement> Parser::ParseWhileStmt() {
     return Result;
 }
 
+std::unique_ptr<Statement> Parser::ParseReturnStmt() {
+    getNextToken();
+
+    auto retexpr = ParseExprStmt();
+
+    auto Result = std::make_unique<ReturnStmt>(std::move(retexpr));
+    return Result;
+}
+
 std::unique_ptr<Statement> Parser::ParseStmt() {
     switch(peekCurr().tokentype) {
         case TokenType::LEFT_CURLY: {
@@ -329,6 +338,11 @@ std::unique_ptr<Statement> Parser::ParseStmt() {
 
         case TokenType::WHILE: {
             return ParseWhileStmt();
+        }
+        break;
+
+        case TokenType::RETURN: {
+            return ParseReturnStmt();
         }
         break;
 

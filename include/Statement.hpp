@@ -55,4 +55,12 @@ class WhileStmt: public Statement {
     void accept(StmtVisitor& stmtVisitor);
 };
 
+class ReturnStmt: public Statement {
+    public:
+    std::unique_ptr<Statement> retExpr;
+
+    ReturnStmt(std::unique_ptr<Statement> retexpr);
+    void accept(StmtVisitor& stmtVisitor);
+};
+
 #endif

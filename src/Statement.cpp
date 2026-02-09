@@ -104,3 +104,17 @@ void WhileStmt::accept(StmtVisitor& stmtVisitor) {
     elsebody->accept(stmtVisitor);
     stmtVisitor.depth -= 1;
 }
+
+ReturnStmt::ReturnStmt(std::unique_ptr<Statement> retexpr) {
+    retExpr = std::move(retexpr);
+}
+
+void ReturnStmt::accept(StmtVisitor& stmtVisitor) {
+    stmtVisitor.visitReturnStmt(*this);
+
+    Statement* retexpr = (this->retExpr).get();
+
+    stmtVisitor.depth += 1;
+    retexpr->accept(stmtVisitor);
+    stmtVisitor.depth -= 1;
+}

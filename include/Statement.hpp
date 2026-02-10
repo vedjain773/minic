@@ -4,6 +4,7 @@
 #include <vector>
 #include "Expression.hpp"
 #include "StmtVisitor.hpp"
+#include "Token.hpp"
 
 class Statement {
     public:
@@ -60,6 +61,16 @@ class ReturnStmt: public Statement {
     std::unique_ptr<Statement> retExpr;
 
     ReturnStmt(std::unique_ptr<Statement> retexpr);
+    void accept(StmtVisitor& stmtVisitor);
+};
+
+class DeclStmt: public Statement {
+    public:
+    TokenType type;
+    std::string name;
+    std::unique_ptr<Expression> expression;
+
+    DeclStmt(TokenType tokentype, std::string varname, std::unique_ptr<Expression> expr);
     void accept(StmtVisitor& stmtVisitor);
 };
 

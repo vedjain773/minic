@@ -26,6 +26,11 @@ void PrintStmtVisitor::visitReturnStmt(ReturnStmt& returnstmt) {
     std::cout << getIndent() << "|-Stmt(Return)\n";
 }
 
+void PrintStmtVisitor::visitDeclStmt(DeclStmt& declstmt) {
+    std::cout << getIndent() << "|-Stmt(Declare)\n";
+    std::cout << getIndent() << "  |-Var(" + declstmt.name + ")\n";
+}
+
 std::string PrintStmtVisitor::getIndent() {
     std::string indent = "";
 

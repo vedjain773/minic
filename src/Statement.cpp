@@ -17,10 +17,6 @@ void ExprStmt::accept(StmtVisitor& stmtVisitor) {
     printVis.depth -= 1;
 }
 
-// BlockStmt::BlockStmt(std::unique_ptr<Statement> stmt) {
-//     statement = std::move(stmt);
-// }
-
 void BlockStmt::addStmt(std::unique_ptr<Statement> stmt) {
     statements.push_back(std::move(stmt));
 }
@@ -116,5 +112,30 @@ void ReturnStmt::accept(StmtVisitor& stmtVisitor) {
 
     stmtVisitor.depth += 1;
     retexpr->accept(stmtVisitor);
+    stmtVisitor.depth -= 1;
+}
+
+DeclStmt::DeclStmt(TokenType tokentype, std::string varname, std::unique_ptr<Expression> expr) {
+    type = tokentype;
+    name = varname;
+    expression = std::move(expr);
+}
+
+void DeclStmt::accept(StmtVisitor& stmtVisitor) {
+    stmtVisitor.visitDeclStmt(*this);
+
+    Expression* expr = (this->expression).get();
+
+    PrintVisitor printVis;
+    printVis.depth = stmtVisitor.depth;
+
+    stmtVisitor.depth += 1;
+    printVis.depth += 1;
+
+    if (expr != nullptr) {
+        expr->accept(printVis);
+    }
+
+    printVis.depth -= 1;
     stmtVisitor.depth -= 1;
 }

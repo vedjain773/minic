@@ -324,10 +324,42 @@ std::unique_ptr<Statement> Parser::ParseReturnStmt() {
     return Result;
 }
 
+std::unique_ptr<Statement> Parser::ParseDeclStmt() {
+    TokenType tokenType = peekCurr().tokentype;
+    getNextToken();
+
+    if (peekCurr().tokentype != TokenType::IDENTIFIER) {
+        Error error(peekCurr().line, peekCurr().column);
+        error.printErrorMsg("Expected IDENTIFIER");
+        return nullptr;
+    }
+
+    std::string varname = peekCurr().lexeme;
+    getNextToken();
+
+    if (peekCurr().tokentype == TokenType::EQUALS) {
+        getNextToken();
+        auto expr = ParseLOrExpr();
+        auto Result = std::make_unique<DeclStmt>(tokenType, varname, std::move(expr));
+        getNextToken();
+        return Result;
+    } else {
+        auto Result = std::make_unique<DeclStmt>(tokenType, varname, nullptr);
+        getNextToken();
+        return Result;
+    }
+}
+
 std::unique_ptr<Statement> Parser::ParseStmt() {
     switch(peekCurr().tokentype) {
         case TokenType::LEFT_CURLY: {
             return ParseBlockStmt();
+        }
+        break;
+
+        case TokenType::INT:
+        case TokenType::CHAR: {
+            return ParseDeclStmt();
         }
         break;
 

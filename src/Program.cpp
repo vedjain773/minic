@@ -1,6 +1,10 @@
 #include "Program.hpp"
 #include "StmtVisitor.hpp"
 
+void Program::accept(ProgVisitor& progvisitor) {
+    progvisitor.visitProgram(*this);
+}
+
 void Program::add(std::unique_ptr<Statement> stmt) {
     root.push_back(std::move(stmt));
 }

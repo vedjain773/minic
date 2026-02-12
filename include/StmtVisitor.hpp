@@ -40,4 +40,16 @@ class PrintStmtVisitor: public StmtVisitor {
     std::string getIndent();
 };
 
+class SemanticStmtVisitor: public StmtVisitor {
+    public:
+    void visitExprStmt(ExprStmt& exprstmt);
+    void visitBlockStmt(BlockStmt& blockstmt);
+    void visitIfStmt(IfStmt& ifstmt);
+    void visitElseStmt(ElseStmt& elsestmt);
+    void visitWhileStmt(WhileStmt& whilestmt);
+    void visitReturnStmt(ReturnStmt& returnstmt);
+    void visitDeclStmt(DeclStmt& declstmt);
+    void visitEmptyStmt(EmptyStmt& emptystmt);
+};
+
 #endif

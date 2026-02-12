@@ -44,3 +44,7 @@ std::string PrintStmtVisitor::getIndent() {
 
     return indent;
 }
+
+void SemanticStmtVisitor::visitDeclStmt(DeclStmt& declstmt) {
+
+}

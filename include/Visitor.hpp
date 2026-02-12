@@ -2,6 +2,8 @@
 #define VISITOR_H
 
 #include <string>
+#include <vector>
+#include "Scope.hpp"
 
 class IntExpr;
 class VarExpr;

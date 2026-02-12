@@ -1,6 +1,5 @@
 #include "Parser.hpp"
 #include "Visitor.hpp"
-#include "StmtVisitor.hpp"
 #include "Error.hpp"
 #include "Program.hpp"
 #include <iostream>

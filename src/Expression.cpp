@@ -76,40 +76,12 @@ void VarExpr::accept(Visitor& visitor) {
 
 void UnaryExpr::accept(Visitor& visitor) {
     visitor.visitUnaryExpr(*this);
-
-    Expression* Operand = (this->Operand).get();
-
-    visitor.depth += 1;
-    Operand->accept(visitor);
-    visitor.depth -= 1;
 }
 
 void BinaryExpr::accept(Visitor& visitor) {
     visitor.visitBinaryExpr(*this);
-
-    Expression* lExpr = (this->LHS).get();
-    Expression* rExpr = (this->RHS).get();
-
-    visitor.depth += 1;
-    lExpr->accept(visitor);
-    visitor.depth -= 1;
-
-    visitor.depth += 1;
-    rExpr->accept(visitor);
-    visitor.depth -= 1;
 }
 
 void AssignExpr::accept(Visitor& visitor) {
     visitor.visitAssignExpr(*this);
-
-    Expression* lExpr = (this->LHS).get();
-    Expression* rExpr = (this->RHS).get();
-
-    visitor.depth += 1;
-    lExpr->accept(visitor);
-    visitor.depth -= 1;
-
-    visitor.depth += 1;
-    rExpr->accept(visitor);
-    visitor.depth -= 1;
 }

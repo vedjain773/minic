@@ -1,6 +1,10 @@
 #include "Statement.hpp"
 #include "Visitor.hpp"
 
+void EmptyStmt::accept(StmtVisitor& stmtVisitor) {
+    stmtVisitor.visitEmptyStmt(*this);
+}
+
 ExprStmt::ExprStmt(std::unique_ptr<Expression> expr) {
     expression = std::move(expr);
 }

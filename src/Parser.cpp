@@ -2,6 +2,7 @@
 #include "Visitor.hpp"
 #include "StmtVisitor.hpp"
 #include "Error.hpp"
+#include "Program.hpp"
 #include <iostream>
 
 Parser::Parser(std::vector<Token> tokenlist) {
@@ -384,19 +385,12 @@ std::unique_ptr<Statement> Parser::ParseStmt() {
     }
 }
 
-void Parser::ParseProgram() {
-    PrintStmtVisitor stmtvisitor;
-    while (true) {
-        switch(peekCurr().tokentype) {
-            case TokenType::END_OF_FILE: {
-                return;
-            }
-            break;
-
-            default: {
-                std::unique_ptr<Statement> stmt = std::move(ParseStmt());
-                stmt->accept(stmtvisitor);
-            }
-        }
+Program Parser::ParseProgram() {
+    Program program;
+    while (peekCurr().tokentype != TokenType::END_OF_FILE) {
+        auto stmt = ParseStmt();
+        program.add(std::move(stmt));
     }
+
+    return program;
 }

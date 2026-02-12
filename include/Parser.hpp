@@ -5,6 +5,7 @@
 #include "Token.hpp"
 #include "Expression.hpp"
 #include "Statement.hpp"
+#include "Program.hpp"
 
 class Parser {
     public:
@@ -41,7 +42,7 @@ class Parser {
     std::unique_ptr<Statement> ParseDeclStmt();
     std::unique_ptr<Statement> ParseStmt();
 
-    void ParseProgram();
+    Program ParseProgram();
 };
 
 #endif

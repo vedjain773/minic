@@ -12,6 +12,10 @@ class Statement {
     virtual void accept(StmtVisitor& stmtVisitor) = 0;
 };
 
+class EmptyStmt: public Statement {
+    void accept(StmtVisitor& stmtVisitor);
+};
+
 class ExprStmt: public Statement {
     public:
     std::unique_ptr<Expression> expression;

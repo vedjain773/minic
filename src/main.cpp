@@ -1,5 +1,6 @@
 #include "Scanner.hpp"
 #include "Parser.hpp"
+#include "Program.hpp"
 
 int main() {
     Scanner scanner("test/sample.c");
@@ -10,7 +11,8 @@ int main() {
     std::vector <Token> tokenlist = scanner.getTokenList();
     Parser parser(tokenlist);
 
-    parser.ParseProgram();
+    Program prog = parser.ParseProgram();
+    prog.printAST();
 
     return 0;
 }

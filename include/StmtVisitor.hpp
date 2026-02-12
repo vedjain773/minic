@@ -10,6 +10,7 @@ class ElseStmt;
 class WhileStmt;
 class ReturnStmt;
 class DeclStmt;
+class EmptyStmt;
 
 class StmtVisitor {
     public:
@@ -22,6 +23,7 @@ class StmtVisitor {
     virtual void visitWhileStmt(WhileStmt& whilestmt) = 0;
     virtual void visitReturnStmt(ReturnStmt& returnstmt) = 0;
     virtual void visitDeclStmt(DeclStmt& declstmt) = 0;
+    virtual void visitEmptyStmt(EmptyStmt& emptystmt) = 0;
 };
 
 class PrintStmtVisitor: public StmtVisitor {
@@ -33,6 +35,7 @@ class PrintStmtVisitor: public StmtVisitor {
     void visitWhileStmt(WhileStmt& whilestmt);
     void visitReturnStmt(ReturnStmt& returnstmt);
     void visitDeclStmt(DeclStmt& declstmt);
+    void visitEmptyStmt(EmptyStmt& emptystmt);
 
     std::string getIndent();
 };

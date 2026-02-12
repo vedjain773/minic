@@ -5,15 +5,16 @@
 #include "Expression.hpp"
 #include "StmtVisitor.hpp"
 #include "Token.hpp"
+#include "Visitor.hpp"
 
 class Statement {
     public:
     virtual ~Statement() = default;
-    virtual void accept(StmtVisitor& stmtVisitor) = 0;
+    virtual void accept(Visitor& visitor) = 0;
 };
 
 class EmptyStmt: public Statement {
-    void accept(StmtVisitor& stmtVisitor);
+    void accept(Visitor& visitor);
 };
 
 class ExprStmt: public Statement {
@@ -21,7 +22,7 @@ class ExprStmt: public Statement {
     std::unique_ptr<Expression> expression;
 
     ExprStmt(std::unique_ptr<Expression> expr);
-    void accept(StmtVisitor& stmtVisitor);
+    void accept(Visitor& visitor);
 };
 
 class BlockStmt: public Statement {
@@ -30,7 +31,7 @@ class BlockStmt: public Statement {
 
     // BlockStmt(std::unique_ptr<Statement> stmt);
     void addStmt(std::unique_ptr<Statement> stmt);
-    void accept(StmtVisitor& stmtvisistor);
+    void accept(Visitor& visitor);
 };
 
 class IfStmt: public Statement {
@@ -40,7 +41,7 @@ class IfStmt: public Statement {
     std::unique_ptr<Statement> elseStmt;
 
     IfStmt(std::unique_ptr<Expression> condition, std::unique_ptr<Statement> ifbody, std::unique_ptr<Statement> elsestmt);
-    void accept(StmtVisitor& stmtVisitor);
+    void accept(Visitor& visitor);
 };
 
 class ElseStmt: public Statement {
@@ -48,7 +49,7 @@ class ElseStmt: public Statement {
     std::unique_ptr<Statement> body;
 
     ElseStmt(std::unique_ptr<Statement> elsebody);
-    void accept(StmtVisitor& stmtVisitor);
+    void accept(Visitor& visitor);
 };
 
 class WhileStmt: public Statement {
@@ -57,7 +58,7 @@ class WhileStmt: public Statement {
     std::unique_ptr<Statement> body;
 
     WhileStmt(std::unique_ptr<Expression> condn, std::unique_ptr<Statement> whilebody);
-    void accept(StmtVisitor& stmtVisitor);
+    void accept(Visitor& visitor);
 };
 
 class ReturnStmt: public Statement {
@@ -65,7 +66,7 @@ class ReturnStmt: public Statement {
     std::unique_ptr<Statement> retExpr;
 
     ReturnStmt(std::unique_ptr<Statement> retexpr);
-    void accept(StmtVisitor& stmtVisitor);
+    void accept(Visitor& visitor);
 };
 
 class DeclStmt: public Statement {
@@ -75,7 +76,7 @@ class DeclStmt: public Statement {
     std::unique_ptr<Expression> expression;
 
     DeclStmt(TokenType tokentype, std::string varname, std::unique_ptr<Expression> expr);
-    void accept(StmtVisitor& stmtVisitor);
+    void accept(Visitor& visitor);
 };
 
 #endif

@@ -2,6 +2,7 @@
 #include "Expression.hpp"
 #include "Statement.hpp"
 #include "Program.hpp"
+#include "Error.hpp"
 #include <iostream>
 
 void PrintVisitor::visitIntExpr(IntExpr& intexpr) {
@@ -160,4 +161,130 @@ std::string PrintVisitor::getIndent() {
     }
 
     return indent;
+}
+
+void SemanticVisitor::visitProgram(Program& program) {
+    Scope globalScope;
+    scopeVec.push_back(globalScope);
+
+    for (int i = 0; i < program.root.size(); i++) {
+        Statement* stmt = (program.root[i]).get();
+        stmt->accept(*this);
+    }
+
+    scopeVec.pop_back();
+}
+
+void SemanticVisitor::visitEmptyStmt(EmptyStmt& emptystmt) {
+    //dosomething
+}
+
+void SemanticVisitor::visitBlockStmt(BlockStmt& blockstmt) {
+    Scope locScope;
+    scopeVec.push_back(locScope);
+
+    for (int i = 0; i < blockstmt.statements.size(); i++) {
+        Statement* stmt = (blockstmt.statements[i]).get();
+        stmt->accept(*this);
+    }
+
+    scopeVec.pop_back();
+}
+
+void SemanticVisitor::visitDeclStmt(DeclStmt& declstmt) {
+    if (scopeVec[scopeVec.size() - 1].search(declstmt.name)) {
+        Error error;
+        error.printErrorMsg(declstmt.name + " is already declared");
+    } else {
+        scopeVec[scopeVec.size() - 1].addRow(declstmt.name, declstmt.type);
+    }
+
+    Expression* expr = (declstmt.expression).get();
+
+    if (expr != nullptr) {
+        expr->accept(*this);
+    }
+}
+
+void SemanticVisitor::visitIfStmt(IfStmt& ifstmt) {
+    Expression* condn = (ifstmt.condition).get();
+    Statement* ifbody = (ifstmt.body).get();
+    Statement* elsestmt = (ifstmt.elseStmt).get();
+
+    condn->accept(*this);
+    ifbody->accept(*this);
+
+    if (elsestmt != nullptr) {
+        elsestmt->accept(*this);
+    }
+}
+
+void SemanticVisitor::visitElseStmt(ElseStmt& elsestmt) {
+    Statement* elsebody = (elsestmt.body).get();
+
+    elsebody->accept(*this);
+}
+
+void SemanticVisitor::visitWhileStmt(WhileStmt& whilestmt) {
+    Expression* condn = (whilestmt.condition).get();
+    Statement* elsebody = (whilestmt.body).get();
+
+    condn->accept(*this);
+    elsebody->accept(*this);
+}
+
+void SemanticVisitor::visitReturnStmt(ReturnStmt& returnstmt) {
+    Statement* retexpr = (returnstmt.retExpr).get();
+
+    retexpr->accept(*this);
+}
+
+void SemanticVisitor::visitExprStmt(ExprStmt& exprstmt) {
+    Expression* expr = (exprstmt.expression).get();
+
+    expr->accept(*this);
+}
+
+void SemanticVisitor::visitAssignExpr(AssignExpr& assignexpr) {
+    Expression* lExpr = (assignexpr.LHS).get();
+    Expression* rExpr = (assignexpr.RHS).get();
+
+    lExpr->accept(*this);
+
+    rExpr->accept(*this);
+}
+
+void SemanticVisitor::visitBinaryExpr(BinaryExpr& binexpr) {
+    Expression* lExpr = (binexpr.LHS).get();
+    Expression* rExpr = (binexpr.RHS).get();
+
+    lExpr->accept(*this);
+
+    rExpr->accept(*this);
+}
+
+void SemanticVisitor::visitUnaryExpr(UnaryExpr& unaryexpr) {
+    Expression* Operand = (unaryexpr.Operand).get();
+
+    Operand->accept(*this);
+}
+
+void SemanticVisitor::visitVarExpr(VarExpr& varexpr) {
+    bool flag = false;
+
+    for (int i = scopeVec.size() - 1; i >= 0; i--) {
+        if (scopeVec[i].search(varexpr.Name)) {
+            flag = true;
+            break;
+        }
+    }
+
+    if (!flag) {
+        Error error;
+        error.printErrorMsg("Undeclared variable: " + varexpr.Name);
+    }
+}
+
+void SemanticVisitor::visitIntExpr(IntExpr& intexpr) {
+    //dosomething
 }

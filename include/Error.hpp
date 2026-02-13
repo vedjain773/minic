@@ -9,6 +9,7 @@ class Error {
     int column;
 
     public:
+    Error();
     Error(int line_num, int col_num);
 
     void printErrorMsg(std::string message);

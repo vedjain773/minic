@@ -13,3 +13,8 @@ void Program::printAST() {
     PrintVisitor printvisitor;
     this->accept(printvisitor);
 }
+
+void Program::semAnalyse() {
+    SemanticVisitor semvisitor;
+    this->accept(semvisitor);
+}

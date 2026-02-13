@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include "Token.hpp"
 
 enum class TypeKind {
     INT, CHAR
@@ -12,7 +13,8 @@ class Scope {
     public:
     std::map<std::string, TypeKind> symTable;
 
-    void addRow(std::string name, TypeKind typekind);
+    void addRow(std::string name, TokenType tokentype);
+    bool search(std::string name);
 };
 
 #endif

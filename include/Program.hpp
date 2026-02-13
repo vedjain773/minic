@@ -13,6 +13,7 @@ class Program {
     void accept(Visitor& visitor);
     void add(std::unique_ptr<Statement> stmt);
     void printAST();
+    void semAnalyse();
 };
 
 #endif

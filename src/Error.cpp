@@ -1,6 +1,11 @@
 #include "Error.hpp"
 #include <iostream>
 
+Error::Error() {
+    line = 0;
+    column = 0;
+}
+
 Error::Error(int line_num, int col_num) {
     line = line_num;
     column = col_num;

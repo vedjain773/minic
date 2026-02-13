@@ -13,6 +13,7 @@ int main() {
 
     Program prog = parser.ParseProgram();
     prog.printAST();
+    prog.semAnalyse();
 
     return 0;
 }

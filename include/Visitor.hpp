@@ -66,4 +66,26 @@ class PrintVisitor: public Visitor {
     std::string getIndent();
 };
 
+class SemanticVisitor: public Visitor {
+    public:
+    std::vector<Scope> scopeVec;
+
+    void visitIntExpr(IntExpr& intexpr);
+    void visitVarExpr(VarExpr& varexpr);
+    void visitUnaryExpr(UnaryExpr& unaryexpr);
+    void visitBinaryExpr(BinaryExpr& binaryexpr);
+    void visitAssignExpr(AssignExpr& assignexpr);
+
+    void visitExprStmt(ExprStmt& exprstmt);
+    void visitBlockStmt(BlockStmt& blockstmt);
+    void visitIfStmt(IfStmt& ifstmt);
+    void visitElseStmt(ElseStmt& elsestmt);
+    void visitWhileStmt(WhileStmt& whilestmt);
+    void visitReturnStmt(ReturnStmt& returnstmt);
+    void visitDeclStmt(DeclStmt& declstmt);
+    void visitEmptyStmt(EmptyStmt& emptystmt);
+
+    void visitProgram(Program& program);
+};
+
 #endif

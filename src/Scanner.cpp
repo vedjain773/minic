@@ -184,7 +184,7 @@ void Scanner::scanToken() {
         }
 
         case ' ': {
-            //ignore
+            column++;
         }
 
         case '\r': {

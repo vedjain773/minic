@@ -8,6 +8,8 @@
 
 class Statement {
     public:
+    int line;
+    int column;
     virtual ~Statement() = default;
     virtual void accept(Visitor& visitor) = 0;
 };
@@ -28,7 +30,6 @@ class BlockStmt: public Statement {
     public:
     std::vector<std::unique_ptr<Statement>> statements;
 
-    // BlockStmt(std::unique_ptr<Statement> stmt);
     void addStmt(std::unique_ptr<Statement> stmt);
     void accept(Visitor& visitor);
 };
@@ -74,7 +75,7 @@ class DeclStmt: public Statement {
     std::string name;
     std::unique_ptr<Expression> expression;
 
-    DeclStmt(TokenType tokentype, std::string varname, std::unique_ptr<Expression> expr);
+    DeclStmt(TokenType tokentype, std::string varname, std::unique_ptr<Expression> expr, int tline, int tcol);
     void accept(Visitor& visitor);
 };
 

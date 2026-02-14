@@ -197,7 +197,7 @@ void SemanticVisitor::visitBlockStmt(BlockStmt& blockstmt) {
 
 void SemanticVisitor::visitDeclStmt(DeclStmt& declstmt) {
     if (scopeVec[scopeVec.size() - 1].search(declstmt.name)) {
-        Error error;
+        Error error(declstmt.line, declstmt.column);
         error.printErrorMsg(declstmt.name + " is already declared");
     } else {
         scopeVec[scopeVec.size() - 1].addRow(declstmt.name, declstmt.type);
@@ -218,7 +218,7 @@ void SemanticVisitor::visitIfStmt(IfStmt& ifstmt) {
     condn->accept(*this);
 
     if (condn->infType != TypeKind::INT) {
-        Error error;
+        Error error(ifstmt.line, ifstmt.column);
         error.printErrorMsg("Invalid (while) condition expression");
     }
 
@@ -242,7 +242,7 @@ void SemanticVisitor::visitWhileStmt(WhileStmt& whilestmt) {
     condn->accept(*this);
 
     if (condn->infType != TypeKind::INT) {
-        Error error;
+        Error error(whilestmt.line, whilestmt.column);
         error.printErrorMsg("Invalid (while) condition expression");
     }
 
@@ -272,7 +272,7 @@ void SemanticVisitor::visitAssignExpr(AssignExpr& assignexpr) {
     if (lExpr->infType == rExpr->infType) {
         assignexpr.infType = lExpr->infType;
     } else {
-        Error error;
+        Error error(assignexpr.line, assignexpr.column);
         error.printErrorMsg("Invalid assignment");
     }
 }
@@ -288,7 +288,7 @@ void SemanticVisitor::visitBinaryExpr(BinaryExpr& binexpr) {
     if (lExpr->infType != TypeKind::VOID && rExpr->infType != TypeKind::VOID) {
         binexpr.infType = TypeKind::INT;
     } else {
-        Error error;
+        Error error(binexpr.line, binexpr.column);
         error.printErrorMsg("Binary operand cannot be of Type: VOID");
     }
 }
@@ -301,7 +301,7 @@ void SemanticVisitor::visitUnaryExpr(UnaryExpr& unaryexpr) {
     if (Operand->infType == TypeKind::INT) {
         unaryexpr.infType = TypeKind::INT;
     } else {
-        Error error;
+        Error error(unaryexpr.line, unaryexpr.column);
         error.printErrorMsg("Operand must be of type: INT");
     }
 }
@@ -318,7 +318,7 @@ void SemanticVisitor::visitVarExpr(VarExpr& varexpr) {
     }
 
     if (!flag) {
-        Error error;
+        Error error(varexpr.line, varexpr.column);
         error.printErrorMsg("Undeclared variable: " + varexpr.Name);
     }
 }

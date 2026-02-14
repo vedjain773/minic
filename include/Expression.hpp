@@ -28,16 +28,18 @@ Operators getOp(std::string op_str);
 
 class Expression {
     public:
+    TypeKind infType;
+    int line;
+    int column;
     virtual ~Expression() = default;
     virtual void accept(Visitor& visitor) = 0;
-    TypeKind infType;
 };
 
 class IntExpr: public Expression {
     public:
     int Val;
 
-    IntExpr(int value);
+    IntExpr(int value, int tline, int tcol);
     void accept(Visitor& visitor);
 };
 
@@ -45,7 +47,7 @@ class CharExpr: public Expression {
     public:
     char character;
 
-    CharExpr(char charac);
+    CharExpr(char charac, int tline, int tcol);
     void accept(Visitor& visitor);
 };
 
@@ -53,7 +55,7 @@ class VarExpr: public Expression {
     public:
     std::string Name;
 
-    VarExpr(std::string name);
+    VarExpr(std::string name, int tline, int tcol);
     void accept(Visitor& visitor);
 };
 
@@ -62,7 +64,7 @@ class UnaryExpr: public Expression {
     Operators Op;
     std::unique_ptr<Expression> Operand;
 
-    UnaryExpr(Operators op, std::unique_ptr<Expression> operand);
+    UnaryExpr(Operators op, std::unique_ptr<Expression> operand, int tline, int tcol);
     void accept(Visitor& visitor);
 };
 
@@ -72,7 +74,7 @@ class BinaryExpr: public Expression {
     std::unique_ptr<Expression> LHS;
     std::unique_ptr<Expression> RHS;
 
-    BinaryExpr(Operators op, std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs);
+    BinaryExpr(Operators op, std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs, int tline, int tcol);
     void accept(Visitor& visitor);
 };
 
@@ -81,7 +83,7 @@ class AssignExpr: public Expression {
     std::unique_ptr<Expression> LHS;
     std::unique_ptr<Expression> RHS;
 
-    AssignExpr(std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs);
+    AssignExpr(std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs, int tline, int tcol);
     void accept(Visitor& visitor);
 };
 

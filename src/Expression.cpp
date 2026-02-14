@@ -42,32 +42,44 @@ Operators getOp(std::string opStr) {
     return strToEnum[opStr];
 }
 
-IntExpr::IntExpr(int value) {
+IntExpr::IntExpr(int value, int tline, int tcol) {
     Val = value;
+    line = tline;
+    column = tcol;
 }
 
-CharExpr::CharExpr(char charac) {
+CharExpr::CharExpr(char charac, int tline, int tcol) {
     character = charac;
+    line = tline;
+    column = tcol;
 }
 
-VarExpr::VarExpr(std::string name) {
+VarExpr::VarExpr(std::string name, int tline, int tcol) {
     Name = name;
+    line = tline;
+    column = tcol;
 }
 
-UnaryExpr::UnaryExpr(Operators op, std::unique_ptr<Expression> operand) {
+UnaryExpr::UnaryExpr(Operators op, std::unique_ptr<Expression> operand, int tline, int tcol) {
     Op = op;
     Operand = std::move(operand);
+    line = tline;
+    column = tcol;
 }
 
-BinaryExpr::BinaryExpr(Operators op, std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs) {
+BinaryExpr::BinaryExpr(Operators op, std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs, int tline, int tcol) {
     LHS = std::move(lhs);
     RHS = std::move(rhs);
     Op = op;
+    line = tline;
+    column = tcol;
 }
 
-AssignExpr::AssignExpr(std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs) {
+AssignExpr::AssignExpr(std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs, int tline, int tcol) {
     LHS = std::move(lhs);
     RHS = std::move(rhs);
+    line = tline;
+    column = tcol;
 }
 
 void IntExpr::accept(Visitor& visitor) {

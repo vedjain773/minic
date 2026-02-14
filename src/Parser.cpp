@@ -35,7 +35,7 @@ std::unique_ptr<Expression> Parser::ParseIntExpr() {
     std::string NumStr = peekCurr().lexeme;
     int NumVal = std::stoi(NumStr);
 
-    auto Result = std::make_unique<IntExpr>(NumVal);
+    auto Result = std::make_unique<IntExpr>(NumVal, peekCurr().line, peekCurr().column);
     getNextToken();
     return std::move(Result);
 }
@@ -50,7 +50,7 @@ std::unique_ptr<Expression> Parser::ParseCharExpr() {
     std::string charStr = peekCurr().lexeme;
     char charac = charStr[0];
 
-    auto Result = std::make_unique<CharExpr>(charac);
+    auto Result = std::make_unique<CharExpr>(charac, peekCurr().line, peekCurr().column);
     getNextToken();
     return std::move(Result);
 }
@@ -64,7 +64,7 @@ std::unique_ptr<Expression> Parser::ParseVarExpr() {
 
     std::string Var = peekCurr().lexeme;
 
-    auto Result = std::make_unique<VarExpr>(Var);
+    auto Result = std::make_unique<VarExpr>(Var, peekCurr().line, peekCurr().column);
     getNextToken();
     return std::move(Result);
 }
@@ -122,9 +122,13 @@ std::unique_ptr<Expression> Parser::ParseUnaryExpr() {
         case TokenType::BANG:
         case TokenType::MINUS: {
             Operators oper = getOp(peekCurr().lexeme);
+
+            int tline = peekCurr().line;
+            int tcol = peekCurr().column;
+
             getNextToken();
 
-            auto Result = std::make_unique<UnaryExpr>(oper, ParseUnaryExpr());
+            auto Result = std::make_unique<UnaryExpr>(oper, ParseUnaryExpr(), tline, tcol);
             return Result;
         }
         break;
@@ -140,9 +144,13 @@ std::unique_ptr<Expression> Parser::ParseFactorExpr() {
 
     while (peekCurr().tokentype == TokenType::SLASH || peekCurr().tokentype == TokenType::ASTERISK) {
         Operators oper = getOp(peekCurr().lexeme);
+
+        int tline = peekCurr().line;
+        int tcol = peekCurr().column;
+
         getNextToken();
         auto rhs = std::move(ParseUnaryExpr());
-        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
+        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs), tline, tcol);
     }
 
     return lhs;
@@ -153,9 +161,13 @@ std::unique_ptr<Expression> Parser::ParseTermExpr() {
 
     while (peekCurr().tokentype == TokenType::MINUS || peekCurr().tokentype == TokenType::PLUS) {
         Operators oper = getOp(peekCurr().lexeme);
+
+        int tline = peekCurr().line;
+        int tcol = peekCurr().column;
+
         getNextToken();
         auto rhs = std::move(ParseFactorExpr());
-        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
+        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs), tline, tcol);
     }
 
     return lhs;
@@ -170,9 +182,13 @@ std::unique_ptr<Expression> Parser::ParseCompExpr() {
             peekCurr().tokentype == TokenType::LESS_THAN) {
 
         Operators oper = getOp(peekCurr().lexeme);
+
+        int tline = peekCurr().line;
+        int tcol = peekCurr().column;
+
         getNextToken();
         auto rhs = std::move(ParseTermExpr());
-        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
+        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs), tline, tcol);
     }
 
     return lhs;
@@ -184,9 +200,13 @@ std::unique_ptr<Expression> Parser::ParseEqualityExpr() {
     while (peekCurr().tokentype == TokenType::BANG_EQUALS || peekCurr().tokentype == TokenType::EQUALS_EQUALS) {
 
         Operators oper = getOp(peekCurr().lexeme);
+
+        int tline = peekCurr().line;
+        int tcol = peekCurr().column;
+
         getNextToken();
         auto rhs = std::move(ParseCompExpr());
-        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
+        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs), tline, tcol);
     }
 
     return lhs;
@@ -196,11 +216,14 @@ std::unique_ptr<Expression> Parser::ParseLAndExpr() {
     auto lhs = std::move(ParseEqualityExpr());
 
     while (peekCurr().tokentype == TokenType::AND) {
-
         Operators oper = getOp(peekCurr().lexeme);
+
+        int tline = peekCurr().line;
+        int tcol = peekCurr().column;
+
         getNextToken();
         auto rhs = std::move(ParseEqualityExpr());
-        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
+        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs), tline, tcol);
     }
 
     return lhs;
@@ -211,9 +234,13 @@ std::unique_ptr<Expression> Parser::ParseLOrExpr() {
 
     while (peekCurr().tokentype == TokenType::OR) {
         Operators oper = getOp(peekCurr().lexeme);
+
+        int tline = peekCurr().line;
+        int tcol = peekCurr().column;
+
         getNextToken();
         auto rhs = std::move(ParseLAndExpr());
-        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs));
+        lhs = std::make_unique<BinaryExpr>(oper, std::move(lhs), std::move(rhs), tline, tcol);
     }
 
     return lhs;
@@ -223,10 +250,13 @@ std::unique_ptr<Expression> Parser::ParseAssignExpr() {
     auto lhs = std::move(ParseLOrExpr());
 
     if (peekCurr().tokentype == TokenType::EQUALS) {
+        int tline = peekCurr().line;
+        int tcol = peekCurr().column;
+
         getNextToken();
         auto rhs = std::move(ParseAssignExpr());
 
-        auto Result = std::make_unique<AssignExpr>(std::move(lhs), std::move(rhs));
+        auto Result = std::make_unique<AssignExpr>(std::move(lhs), std::move(rhs), tline, tcol);
         return Result;
     } else {
         return lhs;
@@ -345,6 +375,7 @@ std::unique_ptr<Statement> Parser::ParseReturnStmt() {
 
 std::unique_ptr<Statement> Parser::ParseDeclStmt() {
     TokenType tokenType = peekCurr().tokentype;
+
     getNextToken();
 
     if (peekCurr().tokentype != TokenType::IDENTIFIER) {
@@ -354,16 +385,20 @@ std::unique_ptr<Statement> Parser::ParseDeclStmt() {
     }
 
     std::string varname = peekCurr().lexeme;
+
+    int tline = peekCurr().line;
+    int tcol = peekCurr().column;
+
     getNextToken();
 
     if (peekCurr().tokentype == TokenType::EQUALS) {
         getNextToken();
         auto expr = ParseLOrExpr();
-        auto Result = std::make_unique<DeclStmt>(tokenType, varname, std::move(expr));
+        auto Result = std::make_unique<DeclStmt>(tokenType, varname, std::move(expr), tline, tcol);
         getNextToken();
         return Result;
     } else {
-        auto Result = std::make_unique<DeclStmt>(tokenType, varname, nullptr);
+        auto Result = std::make_unique<DeclStmt>(tokenType, varname, nullptr, tline, tcol);
         getNextToken();
         return Result;
     }

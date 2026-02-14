@@ -111,11 +111,11 @@ void PrintVisitor::visitWhileStmt(WhileStmt& whilestmt) {
     std::cout << getIndent() << "|-Stmt(While)\n";
 
     Expression* condn = (whilestmt.condition).get();
-    Statement* elsebody = (whilestmt.body).get();
+    Statement* whilebody = (whilestmt.body).get();
 
     depth += 1;
     condn->accept(*this);
-    elsebody->accept(*this);
+    whilebody->accept(*this);
     depth -= 1;
 }
 
@@ -216,6 +216,12 @@ void SemanticVisitor::visitIfStmt(IfStmt& ifstmt) {
     Statement* elsestmt = (ifstmt.elseStmt).get();
 
     condn->accept(*this);
+
+    if (condn->infType != TypeKind::INT) {
+        Error error;
+        error.printErrorMsg("Invalid (while) condition expression");
+    }
+
     ifbody->accept(*this);
 
     if (elsestmt != nullptr) {
@@ -231,10 +237,16 @@ void SemanticVisitor::visitElseStmt(ElseStmt& elsestmt) {
 
 void SemanticVisitor::visitWhileStmt(WhileStmt& whilestmt) {
     Expression* condn = (whilestmt.condition).get();
-    Statement* elsebody = (whilestmt.body).get();
+    Statement* whilebody = (whilestmt.body).get();
 
     condn->accept(*this);
-    elsebody->accept(*this);
+
+    if (condn->infType != TypeKind::INT) {
+        Error error;
+        error.printErrorMsg("Invalid (while) condition expression");
+    }
+
+    whilebody->accept(*this);
 }
 
 void SemanticVisitor::visitReturnStmt(ReturnStmt& returnstmt) {
@@ -256,6 +268,13 @@ void SemanticVisitor::visitAssignExpr(AssignExpr& assignexpr) {
     lExpr->accept(*this);
 
     rExpr->accept(*this);
+
+    if (lExpr->infType == rExpr->infType) {
+        assignexpr.infType = lExpr->infType;
+    } else {
+        Error error;
+        error.printErrorMsg("Invalid assignment");
+    }
 }
 
 void SemanticVisitor::visitBinaryExpr(BinaryExpr& binexpr) {
@@ -265,12 +284,26 @@ void SemanticVisitor::visitBinaryExpr(BinaryExpr& binexpr) {
     lExpr->accept(*this);
 
     rExpr->accept(*this);
+
+    if (lExpr->infType != TypeKind::VOID && rExpr->infType != TypeKind::VOID) {
+        binexpr.infType = TypeKind::INT;
+    } else {
+        Error error;
+        error.printErrorMsg("Binary operand cannot be of Type: VOID");
+    }
 }
 
 void SemanticVisitor::visitUnaryExpr(UnaryExpr& unaryexpr) {
     Expression* Operand = (unaryexpr.Operand).get();
 
     Operand->accept(*this);
+
+    if (Operand->infType == TypeKind::INT) {
+        unaryexpr.infType = TypeKind::INT;
+    } else {
+        Error error;
+        error.printErrorMsg("Operand must be of type: INT");
+    }
 }
 
 void SemanticVisitor::visitVarExpr(VarExpr& varexpr) {
@@ -279,6 +312,7 @@ void SemanticVisitor::visitVarExpr(VarExpr& varexpr) {
     for (int i = scopeVec.size() - 1; i >= 0; i--) {
         if (scopeVec[i].search(varexpr.Name)) {
             flag = true;
+            varexpr.infType = scopeVec[i].symTable[varexpr.Name];
             break;
         }
     }
@@ -290,9 +324,9 @@ void SemanticVisitor::visitVarExpr(VarExpr& varexpr) {
 }
 
 void SemanticVisitor::visitCharExpr(CharExpr& charexpr) {
-    //dosomething
+    charexpr.infType = TypeKind::CHAR;
 }
 
 void SemanticVisitor::visitIntExpr(IntExpr& intexpr) {
-    //dosomething
+    intexpr.infType = TypeKind::INT;
 }

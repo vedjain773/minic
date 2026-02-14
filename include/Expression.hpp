@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include "Scope.hpp"
 #include "Visitor.hpp"
 
 enum class Operators {
@@ -29,6 +30,7 @@ class Expression {
     public:
     virtual ~Expression() = default;
     virtual void accept(Visitor& visitor) = 0;
+    TypeKind infType;
 };
 
 class IntExpr: public Expression {

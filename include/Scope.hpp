@@ -6,7 +6,8 @@
 #include "Token.hpp"
 
 enum class TypeKind {
-    INT, CHAR
+    //Types
+    INT, CHAR, VOID
 };
 
 class Scope {

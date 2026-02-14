@@ -9,6 +9,10 @@ void PrintVisitor::visitIntExpr(IntExpr& intexpr) {
     std::cout << getIndent() << "|-Int(" << intexpr.Val << ")\n";
 }
 
+void PrintVisitor::visitCharExpr(CharExpr& charexpr) {
+    std::cout << getIndent() << "|-Char(" << charexpr.character << ")\n";
+}
+
 void PrintVisitor::visitVarExpr(VarExpr& varexpr) {
     std::cout << getIndent() << "|-Var(" << varexpr.Name << ")\n";
 }
@@ -283,6 +287,10 @@ void SemanticVisitor::visitVarExpr(VarExpr& varexpr) {
         Error error;
         error.printErrorMsg("Undeclared variable: " + varexpr.Name);
     }
+}
+
+void SemanticVisitor::visitCharExpr(CharExpr& charexpr) {
+    //dosomething
 }
 
 void SemanticVisitor::visitIntExpr(IntExpr& intexpr) {

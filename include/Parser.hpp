@@ -19,6 +19,7 @@ class Parser {
 
     //Parse Expressions
     std::unique_ptr<Expression> ParseIntExpr();
+    std::unique_ptr<Expression> ParseCharExpr();
     std::unique_ptr<Expression> ParseVarExpr();
     std::unique_ptr<Expression> ParseParenExpr();
     std::unique_ptr<Expression> ParsePrimaryExpr();

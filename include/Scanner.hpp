@@ -27,6 +27,7 @@ class Scanner {
     std::vector<Token> getTokenList();
 
     void addToken(TokenType tokenType);
+    void checkChar();
     bool lookAhead(char expEnd);
 
     bool isDigit(char c);

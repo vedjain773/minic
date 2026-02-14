@@ -12,8 +12,8 @@ int main() {
     Parser parser(tokenlist);
 
     Program prog = parser.ParseProgram();
-    prog.printAST();
     prog.semAnalyse();
+    prog.printAST();
 
     return 0;
 }

@@ -167,6 +167,11 @@ void Scanner::scanToken() {
         }
         break;
 
+        case '\'': {
+            checkChar();
+        }
+        break;
+
         case '"': {
             bool termInvComma = lookAhead('"');
 
@@ -231,6 +236,22 @@ void Scanner::addToken(TokenType tokenType) {
     std::string lex = sourceContent.substr(start, current - start);
     Token token = Token(tokenType, lex, line, column);
     tokenList.push_back(token);
+}
+
+void Scanner::checkChar() {
+    if (sourceContent[current + 1] == '\'') {
+        start++;
+        current++;
+        column++;
+
+        addToken(TokenType::CHARACTER);
+
+        current++;
+        column++;
+    } else {
+        Error error(line, column);
+        error.printErrorMsg("No matching \' found");
+    }
 }
 
 bool Scanner::lookAhead(char expEnd) {

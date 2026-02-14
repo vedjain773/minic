@@ -39,6 +39,14 @@ class IntExpr: public Expression {
     void accept(Visitor& visitor);
 };
 
+class CharExpr: public Expression {
+    public:
+    char character;
+
+    CharExpr(char charac);
+    void accept(Visitor& visitor);
+};
+
 class VarExpr: public Expression {
     public:
     std::string Name;

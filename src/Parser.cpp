@@ -40,6 +40,21 @@ std::unique_ptr<Expression> Parser::ParseIntExpr() {
     return std::move(Result);
 }
 
+std::unique_ptr<Expression> Parser::ParseCharExpr() {
+    if (peekCurr().tokentype != TokenType::CHARACTER) {
+        Error error(peekCurr().line, peekCurr().column);
+        error.printErrorMsg("Expected CHARACTER, got " + peekCurr().getTokenStr());
+        return nullptr;
+    }
+
+    std::string charStr = peekCurr().lexeme;
+    char charac = charStr[0];
+
+    auto Result = std::make_unique<CharExpr>(charac);
+    getNextToken();
+    return std::move(Result);
+}
+
 std::unique_ptr<Expression> Parser::ParseVarExpr() {
     if (peekCurr().tokentype != TokenType::IDENTIFIER) {
         Error error(peekCurr().line, peekCurr().column);
@@ -79,6 +94,10 @@ std::unique_ptr<Expression> Parser::ParsePrimaryExpr() {
             return ParseIntExpr();
         }
         break;
+
+        case TokenType::CHARACTER: {
+            return ParseCharExpr();
+        }
 
         case TokenType::IDENTIFIER: {
             return ParseVarExpr();

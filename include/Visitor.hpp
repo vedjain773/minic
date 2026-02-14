@@ -6,6 +6,7 @@
 #include "Scope.hpp"
 
 class IntExpr;
+class CharExpr;
 class VarExpr;
 class UnaryExpr;
 class BinaryExpr;
@@ -27,6 +28,7 @@ class Visitor {
     int depth = 0;
 
     virtual void visitIntExpr(IntExpr& intexpr) = 0;
+    virtual void visitCharExpr(CharExpr& charexpr) = 0;
     virtual void visitVarExpr(VarExpr& varexpr) = 0;
     virtual void visitUnaryExpr(UnaryExpr& unaryexpr) = 0;
     virtual void visitBinaryExpr(BinaryExpr& binaryexpr) = 0;
@@ -47,6 +49,7 @@ class Visitor {
 class PrintVisitor: public Visitor {
     public:
     void visitIntExpr(IntExpr& intexpr);
+    void visitCharExpr(CharExpr& charexpr);
     void visitVarExpr(VarExpr& varexpr);
     void visitUnaryExpr(UnaryExpr& unaryexpr);
     void visitBinaryExpr(BinaryExpr& binaryexpr);
@@ -71,6 +74,7 @@ class SemanticVisitor: public Visitor {
     std::vector<Scope> scopeVec;
 
     void visitIntExpr(IntExpr& intexpr);
+    void visitCharExpr(CharExpr& charexpr);
     void visitVarExpr(VarExpr& varexpr);
     void visitUnaryExpr(UnaryExpr& unaryexpr);
     void visitBinaryExpr(BinaryExpr& binaryexpr);

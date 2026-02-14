@@ -46,6 +46,10 @@ IntExpr::IntExpr(int value) {
     Val = value;
 }
 
+CharExpr::CharExpr(char charac) {
+    character = charac;
+}
+
 VarExpr::VarExpr(std::string name) {
     Name = name;
 }
@@ -68,6 +72,10 @@ AssignExpr::AssignExpr(std::unique_ptr<Expression> lhs, std::unique_ptr<Expressi
 
 void IntExpr::accept(Visitor& visitor) {
     visitor.visitIntExpr(*this);
+}
+
+void CharExpr::accept(Visitor& visitor) {
+    visitor.visitCharExpr(*this);
 }
 
 void VarExpr::accept(Visitor& visitor) {

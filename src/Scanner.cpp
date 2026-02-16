@@ -19,72 +19,84 @@ void Scanner::scanFile() {
 }
 
 void Scanner::scanToken() {
-    char curr = sourceContent[current++];
-    column++;
+    char curr = peekCurr();
     switch (curr) {
         case '{': {
+            getNextChar();
             addToken(TokenType::LEFT_CURLY);
         }
         break;
 
         case '}': {
+            getNextChar();
             addToken(TokenType::RIGHT_CURLY);
         }
         break;
 
         case '(': {
+            getNextChar();
             addToken(TokenType::LEFT_ROUND);
         }
         break;
 
         case ')': {
+            getNextChar();
             addToken(TokenType::RIGHT_ROUND);
         }
         break;
 
         case '[': {
+            getNextChar();
             addToken(TokenType::LEFT_SQUARE);
         }
         break;
 
         case ']': {
+            getNextChar();
             addToken(TokenType::RIGHT_SQUARE);
         }
         break;
 
         case ',': {
+            getNextChar();
             addToken(TokenType::COMMA);
         }
         break;
 
         case ';': {
+            getNextChar();
             addToken(TokenType::SEMICOLON);
         }
         break;
 
         case '+': {
+            getNextChar();
             addToken(TokenType::PLUS);
         }
         break;
 
         case '-': {
+            getNextChar();
             addToken(TokenType::MINUS);
         }
         break;
 
         case '*': {
+            getNextChar();
             addToken(TokenType::ASTERISK);
         }
         break;
 
         case '%': {
+            getNextChar();
             addToken(TokenType::MODULUS);
         }
         break;
 
         case '=': {
-            if (sourceContent[current] == '=') {
-                current++;
+            getNextChar();
+            if (peekCurr() == '=') {
+                getNextChar();
                 addToken(TokenType::EQUALS_EQUALS);
             } else {
                 addToken(TokenType::EQUALS);
@@ -93,8 +105,9 @@ void Scanner::scanToken() {
         break;
 
         case '<': {
-            if (sourceContent[current] == '=') {
-                current++;
+            getNextChar();
+            if (peekCurr() == '=') {
+                getNextChar();
                 addToken(TokenType::LESS_EQUALS);
             } else {
                 addToken(TokenType::LESS_THAN);
@@ -103,8 +116,9 @@ void Scanner::scanToken() {
         break;
 
         case '>': {
-            if (sourceContent[current] == '=') {
-                current++;
+            getNextChar();
+            if (peekCurr() == '=') {
+                getNextChar();
                 addToken(TokenType::GREATER_EQUALS);
             } else {
                 addToken(TokenType::GREATER_THAN);
@@ -113,8 +127,9 @@ void Scanner::scanToken() {
         break;
 
         case '!': {
-            if (sourceContent[current] == '=') {
-                current++;
+            getNextChar();
+            if (peekCurr() == '=') {
+                getNextChar();
                 addToken(TokenType::BANG_EQUALS);
             } else {
                 addToken(TokenType::BANG);
@@ -123,8 +138,9 @@ void Scanner::scanToken() {
         break;
 
         case '&': {
-            if (sourceContent[current] == '&') {
-                current++;
+            getNextChar();
+            if (peekCurr() == '&') {
+                getNextChar();
                 addToken(TokenType::AND);
             } else {
                 addToken(TokenType::AMPERSAND);
@@ -133,31 +149,33 @@ void Scanner::scanToken() {
         break;
 
         case '|': {
-            if (sourceContent[current] == '|') {
-                current++;
+            getNextChar();
+            if (peekCurr() == '|') {
+                getNextChar();
                 addToken(TokenType::OR);
             } else {
-                Error error(line, column);
+                Error error(line, tokStartCol);
                 error.printErrorMsg("Unexpected character: |");
             }
         }
         break;
 
         case '/': {
-            if (sourceContent[current] == '/') {
+            getNextChar();
+            if (peekCurr() == '/') {
                 lookAhead('\n');
-            } else if (sourceContent[current] == '*') {
+            } else if (peekCurr() == '*') {
                 bool asterisk = lookAhead('*');
 
                 if (!asterisk) {
-                    Error error(line, column);
+                    Error error(line, tokStartCol);
                     error.printErrorMsg("No matching * found");
                 }
 
-                if (sourceContent[current] == '/') {
-                    current++;
+                if (peekCurr() == '/') {
+                    getNextChar();
                 } else {
-                    Error error(line, column);
+                    Error error(line, tokStartCol);
                     error.printErrorMsg("No matching / found");
                 }
 
@@ -168,7 +186,20 @@ void Scanner::scanToken() {
         break;
 
         case '\'': {
-            checkChar();
+            getNextChar();
+
+            //Consume the actual char
+            getNextChar();
+
+            //consume '
+
+            if (peekCurr() != '\'') {
+                Error error(line, tokStartCol);
+                error.printErrorMsg("No matching \' found");
+            }
+
+            getNextChar();
+            addToken(TokenType::CHARACTER);
         }
         break;
 
@@ -178,13 +209,13 @@ void Scanner::scanToken() {
             if (termInvComma) {
                 addToken(TokenType::STRING);
             } else {
-                Error error(line, column);
+                Error error(line, tokStartCol);
                 error.printErrorMsg("No matching \" found");
             }
         }
 
         case ' ': {
-            column++;
+            getNextChar();
         }
 
         case '\r': {
@@ -197,8 +228,7 @@ void Scanner::scanToken() {
         break;
 
         case '\n': {
-            line++;
-            column = 1;
+            getNextLine();
         }
         break;
 
@@ -208,7 +238,7 @@ void Scanner::scanToken() {
             } else if (isAlpha(curr)) {
                 scanWord();
             } else {
-                Error error(line, column);
+                Error error(line, tokStartCol);
                 error.printErrorMsg("Unexpected character");
             }
         }
@@ -217,6 +247,7 @@ void Scanner::scanToken() {
 
 void Scanner::scanProg() {
     while (current < sourceContent.size()) {
+        tokStartCol = column;
         start = current;
         scanToken();
     }
@@ -232,26 +263,29 @@ void Scanner::printTokens() {
     }
 }
 
-void Scanner::addToken(TokenType tokenType) {
-    std::string lex = sourceContent.substr(start, current - start);
-    Token token = Token(tokenType, lex, line, column);
-    tokenList.push_back(token);
+char Scanner::peekCurr() {
+    return sourceContent[current];
 }
 
-void Scanner::checkChar() {
-    if (sourceContent[current + 1] == '\'') {
-        start++;
-        current++;
-        column++;
+char Scanner::peekNext() {
+    return sourceContent[current + 1];
+}
 
-        addToken(TokenType::CHARACTER);
+void Scanner::getNextChar() {
+    current++;
+    column++;
+}
 
-        current++;
-        column++;
-    } else {
-        Error error(line, column);
-        error.printErrorMsg("No matching \' found");
-    }
+void Scanner::getNextLine() {
+    line++;
+    current++;
+    column = 1;
+}
+
+void Scanner::addToken(TokenType tokenType) {
+    std::string lex = sourceContent.substr(start, current - start);
+    Token token = Token(tokenType, lex, line, tokStartCol);
+    tokenList.push_back(token);
 }
 
 bool Scanner::lookAhead(char expEnd) {
@@ -259,16 +293,14 @@ bool Scanner::lookAhead(char expEnd) {
 
     while (current < sourceContent.size()) {
 
-        if (sourceContent[current] == '\n') {
-            line++;
-            column = 1;
+        if (peekCurr() == '\n') {
+            getNextLine();
         }
 
-        ++current;
-        if (sourceContent[current] == expEnd) {
+        getNextChar();
+        if (peekCurr() == expEnd) {
             isPresent = true;
-            current++;
-            column++;
+            getNextChar();
             break;
         }
     }
@@ -293,16 +325,16 @@ bool Scanner::isAlpha(char c) {
 }
 
 void Scanner::scanNumber() {
-    while(isDigit(sourceContent[current])) {
-        current++;
+    while(isDigit(peekCurr())) {
+        getNextChar();
     }
 
     addToken(TokenType::INTEGER);
 }
 
 void Scanner::scanWord() {
-    while(isAlpha(sourceContent[current]) || isDigit(sourceContent[current])) {
-        current++;
+    while(isAlpha(peekCurr()) || isDigit(peekCurr())) {
+        getNextChar();
     }
 
     std::string sub = sourceContent.substr(start, current - start);

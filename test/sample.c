@@ -1,3 +1,8 @@
-int x = 5;
-int y = 3;
-int z = x + y * 2;
+int a = 5;
+
+if (5 <= 6) {
+    a = a + 1;
+    int y;
+}
+
+y = 5;

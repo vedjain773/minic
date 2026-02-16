@@ -50,5 +50,5 @@ std::string Token::getTokenStr() {
 }
 
 void Token::printToken() {
-    std::cout << "Token: " << lexeme << " Type: " << getTokenStr();
+    std::cout << "Token: " << lexeme << " Type: " << getTokenStr() << " line: " << line << " column: " << column;
 }

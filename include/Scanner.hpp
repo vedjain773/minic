@@ -17,6 +17,7 @@ class Scanner {
     int current = 0;
     int line = 1;
     int column = 1;
+    int tokStartCol = 1;
 
     public:
     Scanner (std::string sourceArg);
@@ -26,6 +27,10 @@ class Scanner {
     void printTokens();
     std::vector<Token> getTokenList();
 
+    char peekCurr();
+    char peekNext();
+    void getNextChar();
+    void getNextLine();
     void addToken(TokenType tokenType);
     void checkChar();
     bool lookAhead(char expEnd);

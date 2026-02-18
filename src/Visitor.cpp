@@ -207,6 +207,11 @@ void SemanticVisitor::visitDeclStmt(DeclStmt& declstmt) {
 
     if (expr != nullptr) {
         expr->accept(*this);
+
+        if (getRank(TokToType(declstmt.type)) < getRank(expr->infType)) {
+            Error error(expr->line, expr->column);
+            error.printErrorMsg("Datatype narrowing is not permitted");
+        }
     }
 }
 
@@ -269,11 +274,11 @@ void SemanticVisitor::visitAssignExpr(AssignExpr& assignexpr) {
 
     rExpr->accept(*this);
 
-    if (lExpr->infType == rExpr->infType) {
+    if (getRank(lExpr->infType) >= getRank(rExpr->infType)) {
         assignexpr.infType = lExpr->infType;
     } else {
         Error error(assignexpr.line, assignexpr.column);
-        error.printErrorMsg("Invalid assignment");
+        error.printErrorMsg("Datatype narrowing is not permitted");
     }
 }
 

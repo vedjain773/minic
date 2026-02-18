@@ -1,17 +1,43 @@
 #include "Scope.hpp"
 
-void Scope::addRow(std::string name, TokenType tokentype) {
-    switch(tokentype) {
+int getRank(TypeKind tk)  {
+    switch (tk) {
+        case TypeKind::INT: {
+            return 2;
+        }
+        break;
+
+        case TypeKind::CHAR: {
+            return 1;
+        }
+        break;
+
+        default: {
+            return 0;
+        }
+    }
+}
+
+TypeKind TokToType(TokenType tk) {
+    switch (tk) {
         case TokenType::INT: {
-            symTable.insert({name, TypeKind::INT});
+            return TypeKind::INT;
         }
         break;
 
         case TokenType::CHAR: {
-            symTable.insert({name, TypeKind::CHAR});
+            return TypeKind::CHAR;
         }
         break;
+
+        default: {
+            return TypeKind::VOID;
+        }
     }
+}
+
+void Scope::addRow(std::string name, TokenType tokentype) {
+    symTable.insert({name, TokToType(tokentype)});
 }
 
 bool Scope::search(std::string name) {

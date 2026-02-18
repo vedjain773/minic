@@ -10,6 +10,9 @@ enum class TypeKind {
     INT, CHAR, VOID
 };
 
+int getRank(TypeKind tk);
+TypeKind TokToType(TokenType tk);
+
 class Scope {
     public:
     std::map<std::string, TypeKind> symTable;

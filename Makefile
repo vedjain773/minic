@@ -1,14 +1,16 @@
-CC = g++
+LLVM_CONFIG = /home/ved/Documents/minic/llvm-18/bin/llvm-config
 
-PROJECT = main
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Iinclude `$(LLVM_CONFIG) --cxxflags`
+LDFLAGS = `$(LLVM_CONFIG) --ldflags`
+LDLIBS = `$(LLVM_CONFIG) --libs core` `$(LLVM_CONFIG) --system-libs`
 
-.PHONY: build
-build:
-	rm -rf ./output/*
+SRC = src/*.cpp
+OUT = out/main
+
+all:
 	@echo "Building..."
-	@$(CC) ./src/*.cpp -I./include -o ./out/$(PROJECT)
+	@$(CXX) $(SRC) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o $(OUT)
 
-.PHONY: clean
 clean:
-	@echo "Cleaning..."
-	@rm -rf ./out/$(PROJECT)
+	rm -f $(OUT)

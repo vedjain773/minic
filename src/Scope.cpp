@@ -36,12 +36,20 @@ TypeKind TokToType(TokenType tk) {
     }
 }
 
-void Scope::addRow(std::string name, TokenType tokentype) {
-    symTable.insert({name, TokToType(tokentype)});
+void Scope::addRow(std::string name, TokenType tokentype, SymbolKind symKind) {
+    Symbol symbol;
+    symbol.type = TokToType(tokentype);
+    symbol.kind = symKind;
+
+    symTable.insert({name, symbol});
 }
 
-void Scope::addRow(std::string name, TypeKind type) {
-    symTable.insert({name, type});
+void Scope::addRow(std::string name, TypeKind type, SymbolKind symKind) {
+    Symbol symbol;
+    symbol.type = type;
+    symbol.kind = symKind;
+
+    symTable.insert({name, symbol});
 }
 
 bool Scope::search(std::string name) {

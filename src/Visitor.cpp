@@ -220,10 +220,18 @@ void SemanticVisitor::visitProgram(Program& program) {
 }
 
 void SemanticVisitor::visitParameter(Parameter& parameter) {
-    scopeVec[scopeVec.size() - 1].addRow(parameter.name, parameter.type);
+    scopeVec[scopeVec.size() - 1].addRow(parameter.name, parameter.type, SymbolKind::VARIABLE);
 }
 
 void SemanticVisitor::visitPrototype(Prototype& prototype) {
+
+    if (scopeVec[0].search(prototype.funcName)) {
+        Error error(prototype.line, prototype.column);
+        error.printErrorMsg(prototype.funcName + " is already declared");
+    } else {
+        scopeVec[0].addRow(prototype.funcName, prototype.retType, SymbolKind::FUNCTION);
+    }
+
     for (int i = 0; i < prototype.paramList.size(); i++) {
         Parameter* param = (prototype.paramList[i]).get();
         param->accept(*this);
@@ -264,7 +272,7 @@ void SemanticVisitor::visitDeclStmt(DeclStmt& declstmt) {
         Error error(declstmt.line, declstmt.column);
         error.printErrorMsg(declstmt.name + " is already declared");
     } else {
-        scopeVec[scopeVec.size() - 1].addRow(declstmt.name, declstmt.type);
+        scopeVec[scopeVec.size() - 1].addRow(declstmt.name, declstmt.type, SymbolKind::VARIABLE);
     }
 
     Expression* expr = (declstmt.expression).get();
@@ -376,6 +384,28 @@ void SemanticVisitor::visitUnaryExpr(UnaryExpr& unaryexpr) {
 }
 
 void SemanticVisitor::visitCallExpr(CallExpr& callexpr) {
+    bool flag = false;
+
+    for (int i = scopeVec.size() - 1; i >= 0; i--) {
+        if (scopeVec[i].search(callexpr.callee)) {
+            flag = true;
+
+            if (scopeVec[i].symTable[callexpr.callee].kind == SymbolKind::FUNCTION) {
+                callexpr.infType = scopeVec[i].symTable[callexpr.callee].type;
+                break;
+            } else {
+                Error error(callexpr.line, callexpr.column);
+                error.printErrorMsg(callexpr.callee + " is not a callable function");
+            }
+
+        }
+    }
+
+    if (!flag) {
+        Error error(callexpr.line, callexpr.column);
+        error.printErrorMsg("Undeclared function: " + callexpr.callee);
+    }
+
     for (int i = 0; i < callexpr.args.size(); i++) {
         Expression* expr = (callexpr.args[i]).get();
         expr->accept(*this);
@@ -388,8 +418,15 @@ void SemanticVisitor::visitVarExpr(VarExpr& varexpr) {
     for (int i = scopeVec.size() - 1; i >= 0; i--) {
         if (scopeVec[i].search(varexpr.Name)) {
             flag = true;
-            varexpr.infType = scopeVec[i].symTable[varexpr.Name];
             break;
+
+            if (scopeVec[i].symTable[varexpr.Name].kind == SymbolKind::VARIABLE) {
+                varexpr.infType = scopeVec[i].symTable[varexpr.Name].type;
+                break;
+            } else {
+                Error error(varexpr.line, varexpr.column);
+                error.printErrorMsg(varexpr.Name + "is not a variable");
+            }
         }
     }
 

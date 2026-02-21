@@ -1,7 +1,8 @@
-int add(int a, int b) {
-    return 1+2;
-}
-
 int main() {
-    return add(1, 2);
+    int a;
+
+    b = a + 5;
+
+    int b = 0;
+    return 0;
 }

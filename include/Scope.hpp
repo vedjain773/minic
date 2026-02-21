@@ -18,6 +18,7 @@ class Scope {
     std::map<std::string, TypeKind> symTable;
 
     void addRow(std::string name, TokenType tokentype);
+    void addRow(std::string name, TypeKind type);
     bool search(std::string name);
 };
 

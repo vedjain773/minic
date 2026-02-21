@@ -3,6 +3,8 @@
 #include "Statement.hpp"
 #include "Program.hpp"
 #include "Error.hpp"
+#include "Function.hpp"
+#include "ExternalDecl.hpp"
 #include <iostream>
 
 void PrintVisitor::visitIntExpr(IntExpr& intexpr) {
@@ -15,6 +17,17 @@ void PrintVisitor::visitCharExpr(CharExpr& charexpr) {
 
 void PrintVisitor::visitVarExpr(VarExpr& varexpr) {
     std::cout << getIndent() << "|-Var(" << varexpr.Name << ")\n";
+}
+
+void PrintVisitor::visitCallExpr(CallExpr& callexpr) {
+    std::cout << getIndent() << "|-Call(" << callexpr.callee << ")\n";
+
+    depth += 1;
+    for (int i = 0; i < callexpr.args.size(); i++) {
+        Expression* expr = (callexpr.args[i]).get();
+        expr->accept(*this);
+    }
+    depth -= 1;
 }
 
 void PrintVisitor::visitUnaryExpr(UnaryExpr& unaryexpr) {
@@ -148,12 +161,39 @@ void PrintVisitor::visitEmptyStmt(EmptyStmt& emptystmt) {
     std::cout << getIndent() << "\n";
 }
 
+void PrintVisitor::visitParameter(Parameter& parameter) {
+    std::cout << getIndent() << "|-Param(" << parameter.name << ")\n";
+}
+
+void PrintVisitor::visitPrototype(Prototype& prototype) {
+    std::cout << getIndent() << "|-Prototype(" << prototype.funcName << ")\n";
+
+    depth += 1;
+    for (int i = 0; i < prototype.paramList.size(); i++) {
+        Parameter* param = (prototype.paramList[i]).get();
+        param->accept(*this);
+    }
+    depth -= 1;
+}
+
+void PrintVisitor::visitFuncDef(FuncDef& funcdef) {
+    std::cout << getIndent() << "|-FuncDef\n";
+
+    Prototype* proto = (funcdef.prototype).get();
+    Statement* stmt = (funcdef.funcBody).get();
+
+    depth += 1;
+    proto->accept(*this);
+    stmt->accept(*this);
+    depth -= 1;
+}
+
 void PrintVisitor::visitProgram(Program& program) {
     std::cout << getIndent() << "\n";
 
     for (int i = 0; i < program.root.size(); i++) {
-        Statement* stmt = (program.root[i]).get();
-        stmt->accept(*this);
+        ExternalDecl* edecl = (program.root[i]).get();
+        edecl->accept(*this);
     }
 }
 
@@ -172,15 +212,39 @@ void SemanticVisitor::visitProgram(Program& program) {
     scopeVec.push_back(globalScope);
 
     for (int i = 0; i < program.root.size(); i++) {
-        Statement* stmt = (program.root[i]).get();
-        stmt->accept(*this);
+        ExternalDecl* edecl = (program.root[i]).get();
+        edecl->accept(*this);
     }
 
     scopeVec.pop_back();
 }
 
+void SemanticVisitor::visitParameter(Parameter& parameter) {
+    scopeVec[scopeVec.size() - 1].addRow(parameter.name, parameter.type);
+}
+
+void SemanticVisitor::visitPrototype(Prototype& prototype) {
+    for (int i = 0; i < prototype.paramList.size(); i++) {
+        Parameter* param = (prototype.paramList[i]).get();
+        param->accept(*this);
+    }
+}
+
+void SemanticVisitor::visitFuncDef(FuncDef& funcdef) {
+    Scope funcScope;
+    scopeVec.push_back(funcScope);
+
+    Prototype* proto = (funcdef.prototype).get();
+    Statement* stmt = (funcdef.funcBody).get();
+
+    proto->accept(*this);
+    stmt->accept(*this);
+
+    scopeVec.pop_back();
+}
+
 void SemanticVisitor::visitEmptyStmt(EmptyStmt& emptystmt) {
-    //dosomething
+    //no checks
 }
 
 void SemanticVisitor::visitBlockStmt(BlockStmt& blockstmt) {
@@ -308,6 +372,13 @@ void SemanticVisitor::visitUnaryExpr(UnaryExpr& unaryexpr) {
     } else {
         Error error(unaryexpr.line, unaryexpr.column);
         error.printErrorMsg("Operand must be of type: INT");
+    }
+}
+
+void SemanticVisitor::visitCallExpr(CallExpr& callexpr) {
+    for (int i = 0; i < callexpr.args.size(); i++) {
+        Expression* expr = (callexpr.args[i]).get();
+        expr->accept(*this);
     }
 }
 

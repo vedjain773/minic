@@ -40,6 +40,10 @@ void Scope::addRow(std::string name, TokenType tokentype) {
     symTable.insert({name, TokToType(tokentype)});
 }
 
+void Scope::addRow(std::string name, TypeKind type) {
+    symTable.insert({name, type});
+}
+
 bool Scope::search(std::string name) {
     return symTable.count(name);
 }

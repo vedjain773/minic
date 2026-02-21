@@ -2,6 +2,7 @@
 #define PARSER_H
 
 #include <vector>
+#include "Function.hpp"
 #include "Token.hpp"
 #include "Expression.hpp"
 #include "Statement.hpp"
@@ -23,6 +24,7 @@ class Parser {
     std::unique_ptr<Expression> ParseVarExpr();
     std::unique_ptr<Expression> ParseParenExpr();
     std::unique_ptr<Expression> ParsePrimaryExpr();
+    std::unique_ptr<Expression> ParseCallExpr();
     std::unique_ptr<Expression> ParseUnaryExpr();
     std::unique_ptr<Expression> ParseFactorExpr();
     std::unique_ptr<Expression> ParseTermExpr();
@@ -42,6 +44,11 @@ class Parser {
     std::unique_ptr<Statement> ParseReturnStmt();
     std::unique_ptr<Statement> ParseDeclStmt();
     std::unique_ptr<Statement> ParseStmt();
+
+    //Parse Functions
+    std::unique_ptr<Parameter> ParseParameter();
+    std::unique_ptr<Prototype> ParsePrototype();
+    std::unique_ptr<FuncDef> ParseFuncDef();
 
     Program ParseProgram();
 };

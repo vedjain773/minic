@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include "Scope.hpp"
+#include "Token.hpp"
 #include "Visitor.hpp"
 
 enum class Operators {
@@ -11,7 +12,7 @@ enum class Operators {
     BANG, MINUS,
 
     //Binary
-    DIVIDE, MULT, PLUS,
+    MODULUS, DIVIDE, MULT, PLUS,
 
     //Comparison
     GREATER, GREATER_EQUALS, LESS, LESS_EQUALS,
@@ -84,6 +85,16 @@ class AssignExpr: public Expression {
     std::unique_ptr<Expression> RHS;
 
     AssignExpr(std::unique_ptr<Expression> lhs, std::unique_ptr<Expression> rhs, int tline, int tcol);
+    void accept(Visitor& visitor);
+};
+
+class CallExpr: public Expression {
+    public:
+    std::string callee;
+    std::vector<std::unique_ptr<Expression>> args;
+
+    CallExpr(std::string callee_name, int tline, int tcol);
+    void add(std::unique_ptr<Expression> arg);
     void accept(Visitor& visitor);
 };
 

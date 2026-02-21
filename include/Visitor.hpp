@@ -8,6 +8,7 @@
 class IntExpr;
 class CharExpr;
 class VarExpr;
+class CallExpr;
 class UnaryExpr;
 class BinaryExpr;
 class AssignExpr;
@@ -21,6 +22,11 @@ class ReturnStmt;
 class DeclStmt;
 class EmptyStmt;
 
+class Parameter;
+class Prototype;
+class FuncDef;
+
+class ExternalDecl;
 class Program;
 
 class Visitor {
@@ -30,6 +36,7 @@ class Visitor {
     virtual void visitIntExpr(IntExpr& intexpr) = 0;
     virtual void visitCharExpr(CharExpr& charexpr) = 0;
     virtual void visitVarExpr(VarExpr& varexpr) = 0;
+    virtual void visitCallExpr(CallExpr& callexpr) = 0;
     virtual void visitUnaryExpr(UnaryExpr& unaryexpr) = 0;
     virtual void visitBinaryExpr(BinaryExpr& binaryexpr) = 0;
     virtual void visitAssignExpr(AssignExpr& assignexpr) = 0;
@@ -43,6 +50,10 @@ class Visitor {
     virtual void visitDeclStmt(DeclStmt& declstmt) = 0;
     virtual void visitEmptyStmt(EmptyStmt& emptystmt) = 0;
 
+    virtual void visitParameter(Parameter& parameter) = 0;
+    virtual void visitPrototype(Prototype& prototype) = 0;
+    virtual void visitFuncDef(FuncDef& funcdef) = 0;
+
     virtual void visitProgram(Program& program) = 0;
 };
 
@@ -51,6 +62,7 @@ class PrintVisitor: public Visitor {
     void visitIntExpr(IntExpr& intexpr);
     void visitCharExpr(CharExpr& charexpr);
     void visitVarExpr(VarExpr& varexpr);
+    void visitCallExpr(CallExpr& callexpr);
     void visitUnaryExpr(UnaryExpr& unaryexpr);
     void visitBinaryExpr(BinaryExpr& binaryexpr);
     void visitAssignExpr(AssignExpr& assignexpr);
@@ -63,6 +75,10 @@ class PrintVisitor: public Visitor {
     void visitReturnStmt(ReturnStmt& returnstmt);
     void visitDeclStmt(DeclStmt& declstmt);
     void visitEmptyStmt(EmptyStmt& emptystmt);
+
+    void visitParameter(Parameter& parameter);
+    void visitPrototype(Prototype& prototype);
+    void visitFuncDef(FuncDef& funcdef);
 
     void visitProgram(Program& program);
 
@@ -76,6 +92,7 @@ class SemanticVisitor: public Visitor {
     void visitIntExpr(IntExpr& intexpr);
     void visitCharExpr(CharExpr& charexpr);
     void visitVarExpr(VarExpr& varexpr);
+    void visitCallExpr(CallExpr& callexpr);
     void visitUnaryExpr(UnaryExpr& unaryexpr);
     void visitBinaryExpr(BinaryExpr& binaryexpr);
     void visitAssignExpr(AssignExpr& assignexpr);
@@ -88,6 +105,10 @@ class SemanticVisitor: public Visitor {
     void visitReturnStmt(ReturnStmt& returnstmt);
     void visitDeclStmt(DeclStmt& declstmt);
     void visitEmptyStmt(EmptyStmt& emptystmt);
+
+    void visitParameter(Parameter& parameter);
+    void visitPrototype(Prototype& prototype);
+    void visitFuncDef(FuncDef& funcdef);
 
     void visitProgram(Program& program);
 };

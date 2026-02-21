@@ -5,8 +5,8 @@ void Program::accept(Visitor& visitor) {
     visitor.visitProgram(*this);
 }
 
-void Program::add(std::unique_ptr<Statement> stmt) {
-    root.push_back(std::move(stmt));
+void Program::add(std::unique_ptr<ExternalDecl> edecl) {
+    root.push_back(std::move(edecl));
 }
 
 void Program::printAST() {

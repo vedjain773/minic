@@ -5,6 +5,7 @@
 std::map<Operators, std::string> enumToStr = {
     {Operators::BANG, "!"},
     {Operators::MINUS, "-"},
+    {Operators::MODULUS, "%"},
     {Operators::DIVIDE, "/"},
     {Operators::MULT, "*"},
     {Operators::PLUS, "+"},
@@ -21,6 +22,7 @@ std::map<Operators, std::string> enumToStr = {
 std::map<std::string, Operators> strToEnum = {
     {"!", Operators::BANG},
     {"-", Operators::MINUS},
+    {"%", Operators::MODULUS},
     {"/", Operators::DIVIDE},
     {"*", Operators::MULT},
     {"+", Operators::PLUS},
@@ -82,6 +84,16 @@ AssignExpr::AssignExpr(std::unique_ptr<Expression> lhs, std::unique_ptr<Expressi
     column = tcol;
 }
 
+CallExpr::CallExpr(std::string callee_name, int tline, int tcol) {
+    callee = callee_name;
+    line = tline;
+    column = tcol;
+}
+
+void CallExpr::add(std::unique_ptr<Expression> arg) {
+    args.push_back(std::move(arg));
+}
+
 void IntExpr::accept(Visitor& visitor) {
     visitor.visitIntExpr(*this);
 }
@@ -104,4 +116,8 @@ void BinaryExpr::accept(Visitor& visitor) {
 
 void AssignExpr::accept(Visitor& visitor) {
     visitor.visitAssignExpr(*this);
+}
+
+void CallExpr::accept(Visitor& visitor) {
+    visitor.visitCallExpr(*this);
 }

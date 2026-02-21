@@ -117,32 +117,51 @@ std::unique_ptr<Expression> Parser::ParsePrimaryExpr() {
     }
 }
 
+std::unique_ptr<Expression> Parser::ParseCallExpr() {
+    std::string name = peekCurr().lexeme;
+    int line = peekCurr().line;
+    int column = peekCurr().column;
+    auto Prim = ParsePrimaryExpr();
+
+    if (peekCurr().tokentype != TokenType:: LEFT_ROUND) {
+        return Prim;
+    } else {
+        getNextToken();
+
+        auto Result = std::make_unique<CallExpr>(name, line, column);
+        while (peekCurr().tokentype != TokenType::RIGHT_ROUND) {
+            auto var = ParseExpr();
+            Result->add(std::move(var));
+
+            if (peekCurr().tokentype == TokenType::COMMA) {
+                getNextToken();
+            }
+        }
+        getNextToken();
+        return Result;
+    }
+}
+
 std::unique_ptr<Expression> Parser::ParseUnaryExpr() {
-    switch(peekCurr().tokentype) {
-        case TokenType::BANG:
-        case TokenType::MINUS: {
-            Operators oper = getOp(peekCurr().lexeme);
+    if (peekCurr().tokentype == TokenType::BANG || peekCurr().tokentype == TokenType::MINUS) {
+        Operators oper = getOp(peekCurr().lexeme);
 
-            int tline = peekCurr().line;
-            int tcol = peekCurr().column;
+        int tline = peekCurr().line;
+        int tcol = peekCurr().column;
 
-            getNextToken();
+        getNextToken();
 
-            auto Result = std::make_unique<UnaryExpr>(oper, ParseUnaryExpr(), tline, tcol);
-            return Result;
-        }
-        break;
-
-        default: {
-            return ParsePrimaryExpr();
-        }
+        auto Result = std::make_unique<UnaryExpr>(oper, ParseUnaryExpr(), tline, tcol);
+        return Result;
+    } else {
+        return ParseCallExpr();
     }
 }
 
 std::unique_ptr<Expression> Parser::ParseFactorExpr() {
     auto lhs = std::move(ParseUnaryExpr());
 
-    while (peekCurr().tokentype == TokenType::SLASH || peekCurr().tokentype == TokenType::ASTERISK) {
+    while (peekCurr().tokentype == TokenType::SLASH || peekCurr().tokentype == TokenType::ASTERISK || peekCurr().tokentype == TokenType::MODULUS) {
         Operators oper = getOp(peekCurr().lexeme);
 
         int tline = peekCurr().line;
@@ -404,6 +423,65 @@ std::unique_ptr<Statement> Parser::ParseDeclStmt() {
     }
 }
 
+std::unique_ptr<Parameter> Parser::ParseParameter() {
+    TokenType type = peekCurr().tokentype;
+
+    if (type != TokenType::INT && type != TokenType::CHAR) {
+        Error error(peekCurr().line, peekCurr().column);
+        error.printErrorMsg("Expected Datatype got: " + peekCurr().lexeme);
+        return nullptr;
+    }
+
+    getNextToken();
+
+    std::string name = peekCurr().lexeme;
+    getNextToken();
+
+    auto Result = std::make_unique<Parameter>(type, name);
+    return Result;
+}
+
+std::unique_ptr<Prototype> Parser::ParsePrototype() {
+    TokenType type = peekCurr().tokentype;
+    int line = peekCurr().line;
+    int column = peekCurr().column;
+    getNextToken();
+
+    std::string name = peekCurr().lexeme;
+    getNextToken();
+
+    if (peekCurr().tokentype != TokenType::LEFT_ROUND) {
+        Error error(peekCurr().line, peekCurr().column);
+        error.printErrorMsg("Expected (");
+        return nullptr;
+    }
+    getNextToken();
+
+    auto Result = std::make_unique<Prototype>(type, name, line, column);
+    while(peekCurr().tokentype != TokenType::RIGHT_ROUND) {
+        auto param = ParseParameter();
+
+        if (param != nullptr) {
+            Result->addParam(std::move(param));
+
+            if (peekCurr().tokentype == TokenType::COMMA) {
+                getNextToken();
+            }
+        }
+    }
+
+    getNextToken();
+    return Result;
+}
+
+std::unique_ptr<FuncDef> Parser::ParseFuncDef() {
+    auto proto = ParsePrototype();
+    auto body = ParseBlockStmt();
+
+    auto Result = std::make_unique<FuncDef>(std::move(proto), std::move(body));
+    return Result;
+}
+
 std::unique_ptr<Statement> Parser::ParseStmt() {
     switch(peekCurr().tokentype) {
         case TokenType::LEFT_CURLY: {
@@ -441,8 +519,8 @@ std::unique_ptr<Statement> Parser::ParseStmt() {
 Program Parser::ParseProgram() {
     Program program;
     while (peekCurr().tokentype != TokenType::END_OF_FILE) {
-        auto stmt = ParseStmt();
-        program.add(std::move(stmt));
+        auto edecl = ParseFuncDef();
+        program.add(std::move(edecl));
     }
 
     return program;

@@ -1,9 +1,11 @@
-void print(int a, int b) {
-    int sum = a + b;
-    return;
+int add(int a, int b) {
+    return a + b;
+}
+
+int square(int x) {
+    return x * x;
 }
 
 int main() {
-    int f = print(1,2,3) + 5;
-    return 0;
+    return square(add(2, 3));
 }

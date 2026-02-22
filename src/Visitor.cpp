@@ -290,9 +290,9 @@ void SemanticVisitor::visitDeclStmt(DeclStmt& declstmt) {
     if (expr != nullptr) {
         expr->accept(*this);
 
-        if (getRank(TokToType(declstmt.type)) < getRank(expr->infType)) {
-            Error error(expr->line, expr->column);
-            error.printErrorMsg("Datatype narrowing is not permitted");
+        if (expr->infType == TypeKind::VOID) {
+            Error error(declstmt.line, declstmt.column);
+            error.printErrorMsg("Variables cannot be of type: VOID");
         }
     }
 }

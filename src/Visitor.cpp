@@ -70,6 +70,10 @@ void PrintVisitor::visitAssignExpr(AssignExpr& assignexpr) {
     depth -= 1;
 }
 
+void PrintVisitor::visitEmptyExpr(EmptyExpr& emptyexpr) {
+    //ignore
+}
+
 void PrintVisitor::visitExprStmt(ExprStmt& exprstmt) {
     std::cout << getIndent() << "|-Stmt(Expr)\n";
 
@@ -135,7 +139,7 @@ void PrintVisitor::visitWhileStmt(WhileStmt& whilestmt) {
 void PrintVisitor::visitReturnStmt(ReturnStmt& returnstmt) {
     std::cout << getIndent() << "|-Stmt(Return)\n";
 
-    Statement* retexpr = (returnstmt.retExpr).get();
+    Expression* retexpr = (returnstmt.retExpr).get();
 
     depth += 1;
     retexpr->accept(*this);
@@ -230,11 +234,13 @@ void SemanticVisitor::visitPrototype(Prototype& prototype) {
         error.printErrorMsg(prototype.funcName + " is already declared");
     } else {
         scopeVec[0].addRow(prototype.funcName, prototype.retType, SymbolKind::FUNCTION);
+        currFuncRetType = prototype.retType;
     }
 
     for (int i = 0; i < prototype.paramList.size(); i++) {
         Parameter* param = (prototype.paramList[i]).get();
         param->accept(*this);
+        scopeVec[0].addParam(prototype.funcName, param->type);
     }
 }
 
@@ -243,10 +249,14 @@ void SemanticVisitor::visitFuncDef(FuncDef& funcdef) {
     scopeVec.push_back(funcScope);
 
     Prototype* proto = (funcdef.prototype).get();
-    Statement* stmt = (funcdef.funcBody).get();
+    BlockStmt* body = (funcdef.funcBody).get();
 
     proto->accept(*this);
-    stmt->accept(*this);
+
+    for (int i = 0; i < body->statements.size(); i++) {
+        Statement* statmt = (body->statements[i]).get();
+        statmt->accept(*this);
+    }
 
     scopeVec.pop_back();
 }
@@ -327,15 +337,31 @@ void SemanticVisitor::visitWhileStmt(WhileStmt& whilestmt) {
 }
 
 void SemanticVisitor::visitReturnStmt(ReturnStmt& returnstmt) {
-    Statement* retexpr = (returnstmt.retExpr).get();
+    Expression* retexpr = (returnstmt.retExpr).get();
 
     retexpr->accept(*this);
+
+    if (retexpr->infType != TypeKind::VOID) {
+        if (currFuncRetType == TypeKind::VOID) {
+            Error error(retexpr->line, retexpr->column);
+            error.printErrorMsg("Void function cannot return a literal");
+        }
+    } else {
+        if (currFuncRetType != TypeKind::VOID) {
+            Error error(retexpr->line, retexpr->column);
+            error.printErrorMsg("Non-void function must return a literal");
+        }
+    }
 }
 
 void SemanticVisitor::visitExprStmt(ExprStmt& exprstmt) {
     Expression* expr = (exprstmt.expression).get();
 
     expr->accept(*this);
+}
+
+void SemanticVisitor::visitEmptyExpr(EmptyExpr& emptyexpr) {
+    emptyexpr.infType = TypeKind::VOID;
 }
 
 void SemanticVisitor::visitAssignExpr(AssignExpr& assignexpr) {
@@ -346,11 +372,11 @@ void SemanticVisitor::visitAssignExpr(AssignExpr& assignexpr) {
 
     rExpr->accept(*this);
 
-    if (getRank(lExpr->infType) >= getRank(rExpr->infType)) {
-        assignexpr.infType = lExpr->infType;
+    if (lExpr->infType != TypeKind::VOID && rExpr->infType != TypeKind::VOID) {
+        assignexpr.infType = TypeKind::INT;
     } else {
         Error error(assignexpr.line, assignexpr.column);
-        error.printErrorMsg("Datatype narrowing is not permitted");
+        error.printErrorMsg("Assignment operand cannot be of Type: VOID");
     }
 }
 
@@ -390,20 +416,30 @@ void SemanticVisitor::visitCallExpr(CallExpr& callexpr) {
         if (scopeVec[i].search(callexpr.callee)) {
             flag = true;
 
-            if (scopeVec[i].symTable[callexpr.callee].kind == SymbolKind::FUNCTION) {
-                callexpr.infType = scopeVec[i].symTable[callexpr.callee].type;
+            if (scopeVec[i].getSymKind(callexpr.callee) == SymbolKind::FUNCTION) {
+                callexpr.infType = scopeVec[i].getSymType(callexpr.callee);
                 break;
             } else {
                 Error error(callexpr.line, callexpr.column);
                 error.printErrorMsg(callexpr.callee + " is not a callable function");
             }
-
         }
     }
 
     if (!flag) {
         Error error(callexpr.line, callexpr.column);
         error.printErrorMsg("Undeclared function: " + callexpr.callee);
+    }
+
+    if (scopeVec[0].getNumParams(callexpr.callee) != callexpr.args.size()) {
+        int expected = scopeVec[0].getNumParams(callexpr.callee);
+        int got = callexpr.args.size();
+
+        Error error(callexpr.line, callexpr.column);
+        error.printErrorMsg(
+            "Expected " + std::to_string(expected) +
+            " arguments, got: " + std::to_string(got)
+        );
     }
 
     for (int i = 0; i < callexpr.args.size(); i++) {
@@ -420,8 +456,8 @@ void SemanticVisitor::visitVarExpr(VarExpr& varexpr) {
             flag = true;
             break;
 
-            if (scopeVec[i].symTable[varexpr.Name].kind == SymbolKind::VARIABLE) {
-                varexpr.infType = scopeVec[i].symTable[varexpr.Name].type;
+            if (scopeVec[i].getSymKind(varexpr.Name) == SymbolKind::VARIABLE) {
+                varexpr.infType = scopeVec[i].getSymType(varexpr.Name);
                 break;
             } else {
                 Error error(varexpr.line, varexpr.column);

@@ -68,12 +68,12 @@ void WhileStmt::accept(Visitor& visitor) {
     visitor.visitWhileStmt(*this);
 }
 
-ReturnStmt::ReturnStmt(std::unique_ptr<Statement> retexpr) {
+ReturnStmt::ReturnStmt(std::unique_ptr<Expression> retexpr) {
     retExpr = std::move(retexpr);
 
-    Statement* statmt = retExpr.get();
-    line = statmt->line;
-    column = statmt->column;
+    Expression* expr = retExpr.get();
+    line = expr->line;
+    column = expr->column;
 }
 
 void ReturnStmt::accept(Visitor& visitor) {

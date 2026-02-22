@@ -55,3 +55,28 @@ void Scope::addRow(std::string name, TypeKind type, SymbolKind symKind) {
 bool Scope::search(std::string name) {
     return symTable.count(name);
 }
+
+void Scope::addParam(std::string name, TypeKind type) {
+    Symbol &sym = symTable[name];
+    sym.params.push_back(type);
+}
+
+int Scope::getNumParams(std::string name) {
+    Symbol &sym = symTable[name];
+    return sym.params.size();
+}
+
+TypeKind Scope::getSymType(std::string name) {
+    Symbol &sym = symTable[name];
+    return sym.type;
+}
+
+SymbolKind Scope::getSymKind(std::string name) {
+    Symbol &sym = symTable[name];
+    return sym.kind;
+}
+
+std::vector<TypeKind> Scope::getParams(std::string name) {
+    Symbol &sym = symTable[name];
+    return sym.params;
+}

@@ -24,7 +24,7 @@ void Prototype::accept(Visitor& visitor) {
     visitor.visitPrototype(*this);
 }
 
-FuncDef::FuncDef(std::unique_ptr<Prototype> proto_type, std::unique_ptr<Statement> func_body) {
+FuncDef::FuncDef(std::unique_ptr<Prototype> proto_type, std::unique_ptr<BlockStmt> func_body) {
     prototype = std::move(proto_type);
     funcBody = std::move(func_body);
 }

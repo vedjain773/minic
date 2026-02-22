@@ -63,9 +63,9 @@ class WhileStmt: public Statement {
 
 class ReturnStmt: public Statement {
     public:
-    std::unique_ptr<Statement> retExpr;
+    std::unique_ptr<Expression> retExpr;
 
-    ReturnStmt(std::unique_ptr<Statement> retexpr);
+    ReturnStmt(std::unique_ptr<Expression> retexpr);
     void accept(Visitor& visitor);
 };
 

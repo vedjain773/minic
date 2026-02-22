@@ -12,6 +12,7 @@ class CallExpr;
 class UnaryExpr;
 class BinaryExpr;
 class AssignExpr;
+class EmptyExpr;
 
 class ExprStmt;
 class BlockStmt;
@@ -40,6 +41,7 @@ class Visitor {
     virtual void visitUnaryExpr(UnaryExpr& unaryexpr) = 0;
     virtual void visitBinaryExpr(BinaryExpr& binaryexpr) = 0;
     virtual void visitAssignExpr(AssignExpr& assignexpr) = 0;
+    virtual void visitEmptyExpr(EmptyExpr& emptyexpr) = 0;
 
     virtual void visitExprStmt(ExprStmt& exprstmt) = 0;
     virtual void visitBlockStmt(BlockStmt& blockstmt) = 0;
@@ -66,6 +68,7 @@ class PrintVisitor: public Visitor {
     void visitUnaryExpr(UnaryExpr& unaryexpr);
     void visitBinaryExpr(BinaryExpr& binaryexpr);
     void visitAssignExpr(AssignExpr& assignexpr);
+    void visitEmptyExpr(EmptyExpr& emptyexpr);
 
     void visitExprStmt(ExprStmt& exprstmt);
     void visitBlockStmt(BlockStmt& blockstmt);
@@ -88,6 +91,7 @@ class PrintVisitor: public Visitor {
 class SemanticVisitor: public Visitor {
     public:
     std::vector<Scope> scopeVec;
+    TypeKind currFuncRetType;
 
     void visitIntExpr(IntExpr& intexpr);
     void visitCharExpr(CharExpr& charexpr);
@@ -96,6 +100,7 @@ class SemanticVisitor: public Visitor {
     void visitUnaryExpr(UnaryExpr& unaryexpr);
     void visitBinaryExpr(BinaryExpr& binaryexpr);
     void visitAssignExpr(AssignExpr& assignexpr);
+    void visitEmptyExpr(EmptyExpr& emptyexpr);
 
     void visitExprStmt(ExprStmt& exprstmt);
     void visitBlockStmt(BlockStmt& blockstmt);

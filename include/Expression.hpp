@@ -88,6 +88,11 @@ class AssignExpr: public Expression {
     void accept(Visitor& visitor);
 };
 
+class EmptyExpr: public Expression {
+    public:
+    void accept(Visitor& visitor);
+};
+
 class CallExpr: public Expression {
     public:
     std::string callee;

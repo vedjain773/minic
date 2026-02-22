@@ -84,6 +84,10 @@ AssignExpr::AssignExpr(std::unique_ptr<Expression> lhs, std::unique_ptr<Expressi
     column = tcol;
 }
 
+void EmptyExpr::accept(Visitor& visitor) {
+    visitor.visitEmptyExpr(*this);
+}
+
 CallExpr::CallExpr(std::string callee_name, int tline, int tcol) {
     callee = callee_name;
     line = tline;

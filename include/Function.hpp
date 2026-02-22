@@ -32,9 +32,9 @@ class Prototype {
 class FuncDef: public ExternalDecl {
     public:
     std::unique_ptr<Prototype> prototype;
-    std::unique_ptr<Statement> funcBody;
+    std::unique_ptr<BlockStmt> funcBody;
 
-    FuncDef(std::unique_ptr<Prototype> proto_type, std::unique_ptr<Statement> func_body);
+    FuncDef(std::unique_ptr<Prototype> proto_type, std::unique_ptr<BlockStmt> func_body);
     void accept(Visitor& visitor);
 };
 

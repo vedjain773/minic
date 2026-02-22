@@ -1,8 +1,9 @@
+void print(int a, int b) {
+    int sum = a + b;
+    return;
+}
+
 int main() {
-    int a;
-
-    b = a + 5;
-
-    int b = 0;
+    int f = print(1,2,3) + 5;
     return 0;
 }

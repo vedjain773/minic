@@ -33,6 +33,12 @@ class Scope {
     void addRow(std::string name, TokenType tokentype, SymbolKind symKind);
     void addRow(std::string name, TypeKind type, SymbolKind symKind);
     bool search(std::string name);
+
+    void addParam(std::string name, TypeKind type);
+    int getNumParams(std::string name);
+    TypeKind getSymType(std::string name);
+    SymbolKind getSymKind(std::string name);
+    std::vector<TypeKind> getParams(std::string name);
 };
 
 #endif

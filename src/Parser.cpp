@@ -300,7 +300,7 @@ std::unique_ptr<Statement> Parser::ParseExprStmt() {
     }
 }
 
-std::unique_ptr<Statement> Parser::ParseBlockStmt() {
+std::unique_ptr<BlockStmt> Parser::ParseBlockStmt() {
     getNextToken();
     auto Result = std::make_unique<BlockStmt>();
 
@@ -386,10 +386,21 @@ std::unique_ptr<Statement> Parser::ParseWhileStmt() {
 std::unique_ptr<Statement> Parser::ParseReturnStmt() {
     getNextToken();
 
-    auto retexpr = ParseExprStmt();
+    if (peekCurr().tokentype == TokenType::SEMICOLON) {
+        auto retexpr = std::make_unique<EmptyExpr>();
+        retexpr->line = peekCurr().line;
+        retexpr->column = peekCurr().column;
+        auto Result = std::make_unique<ReturnStmt>(std::move(retexpr));
 
-    auto Result = std::make_unique<ReturnStmt>(std::move(retexpr));
-    return Result;
+        getNextToken();
+        return Result;
+    } else {
+        auto retexpr = ParseExpr();
+        auto Result = std::make_unique<ReturnStmt>(std::move(retexpr));
+
+        getNextToken();
+        return Result;
+    }
 }
 
 std::unique_ptr<Statement> Parser::ParseDeclStmt() {

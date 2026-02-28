@@ -74,3 +74,30 @@ int main() {
   return add(x, 3);
 }
 ```
+
+Corresponding LLVM IR:
+```
+; ModuleID = 'Moddex'
+source_filename = "Moddex"
+
+define i32 @add(i32 %a, i32 %b) {
+entry:
+  %b2 = alloca i32, align 4
+  %a1 = alloca i32, align 4
+  store i32 %a, ptr %a1, align 4
+  store i32 %b, ptr %b2, align 4
+  %a3 = load i32, ptr %a1, align 4
+  %b4 = load i32, ptr %b2, align 4
+  %add = add nsw i32 %a3, %b4
+  ret i32 %add
+}
+
+define i32 @main() {
+entry:
+  %x = alloca i32, align 4
+  store i32 5, ptr %x, align 4
+  %x1 = load i32, ptr %x, align 4
+  %calltmp = call i32 @add(i32 %x1, i32 3)
+  ret i32 %calltmp
+}
+```

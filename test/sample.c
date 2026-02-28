@@ -4,7 +4,7 @@ int fact(int n) {
 
     while (num > 1) {
         result = result * n;
-        n = n - 1;
+        num = num - 1;
     }
 
     return result;
@@ -20,5 +20,6 @@ int main() {
         y = y-1;
     }
 
+    printf("Hello World!");
     return y;
 }

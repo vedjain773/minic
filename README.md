@@ -29,6 +29,12 @@ Execute
 ```
 ./sample
 ```
+| Flag      | Description      |
+|-----------|------------------|
+| --pt      | Print tokens     |
+| --past    | Print AST        |
+| --emit-ir | Print LLVM IR    |
+| -o        | Emit Object file |
 
 ## Overview
 
